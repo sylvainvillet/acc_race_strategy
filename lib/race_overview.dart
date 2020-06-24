@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import './cars.dart';
-import './tracks.dart';
 import './race.dart';
-import './race_input.dart';
 
 class RaceDetails extends StatelessWidget {
   final Race race;
@@ -17,8 +13,10 @@ class RaceDetails extends StatelessWidget {
     List<Tab> tabs = List<Tab>();
     List<Widget> centralWidgets = List<Widget>();
 
+    /*
     tabs.add(Tab(text: 'Info'));
     centralWidgets.add(raceInfo(context, race));
+     */
 
     if (race.strategies.length == 1) {
       tabs.add(Tab(text: 'Strategy'));
@@ -36,7 +34,7 @@ class RaceDetails extends StatelessWidget {
     }
 
     return DefaultTabController(
-      length: race.strategies.length + 1,
+      length: centralWidgets.length,
       child: Scaffold(
         appBar: AppBar(
           bottom: TabBar(
@@ -66,7 +64,7 @@ class RaceDetails extends StatelessWidget {
           SizedBox(height: margin),
           _buildRow2("Average lap time:", race.getLapTimeString()),
           SizedBox(height: margin),
-          _buildRow2("Formation lap:", race.formationLap),
+          _buildRow2("Formation lap:", race.formationLap == 1 ? 'Full' : 'Short'),
           SizedBox(height: margin),
           _buildRow2("Mandatory pit stops:", race.mandatoryPitStops.toString()),
           SizedBox(height: margin),

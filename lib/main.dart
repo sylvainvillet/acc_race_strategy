@@ -1,9 +1,5 @@
-import 'package:accracestrategy/race_overview.dart';
 import 'package:flutter/material.dart';
 import './race_input.dart';
-import './race.dart';
-import './tracks.dart';
-import './cars.dart';
 
 void main() {
   runApp(MyApp());

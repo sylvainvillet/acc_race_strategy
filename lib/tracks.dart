@@ -7,6 +7,16 @@ class Track {
   final double lapTime;
 }
 
+Track getTrack(String ksName)
+{
+  Track returnValue = tracksList[0];
+  for (Track track in tracksList)
+    if (track.ksName == ksName)
+      returnValue = track;
+
+  return returnValue;
+}
+
 const List<Track> tracksList = [
   Track("monza", "Monza", 5793, 106.7),
   Track("Brands_Hatch", "Brands Hatch", 3908, 83.9),

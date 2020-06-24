@@ -6,6 +6,16 @@ class Car {
   final int tank;
 }
 
+Car getCar(String ksName)
+{
+  Car returnValue = carsList[0];
+  for (Car car in carsList)
+      if (car.ksName == ksName)
+        returnValue = car;
+
+  return returnValue;
+}
+
 const List<Car> carsList = [
   Car("amr_v12_vantage_gt3", "AMR V8 Vantage GT3", 120),
   Car("audi_r8_lms_evo", "Audi R8 LMS Evo", 120),

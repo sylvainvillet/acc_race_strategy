@@ -15,7 +15,7 @@ class Race {
   // input
   Car car;
   Track track;
-  String formationLap;
+  int formationLap;
   int raceDuration;
   bool refuelingAllowed;
   int mandatoryPitStops;
@@ -73,10 +73,7 @@ class Race {
     double nbOfLapsDouble =
         (raceDuration - mandatoryPitStops * timeLostPerPitStop) /
             lapTime; // TODO time lost in pit
-    nbOfLaps = nbOfLapsDouble.ceil();
-    if (formationLap == 'Full') {
-      nbOfLaps++;
-    }
+    nbOfLaps = nbOfLapsDouble.ceil() + formationLap;
     print('nbOfLaps: ' + nbOfLaps.toString());
 
     // Number of pit stops without fuel saving
@@ -91,10 +88,7 @@ class Race {
     // Adjust number of laps
     nbOfLapsDouble =
         (raceDuration - nbOfPitStops * timeLostPerPitStop) / lapTime;
-    nbOfLaps = nbOfLapsDouble.ceil();
-    if (formationLap == 'Full') {
-      nbOfLaps++;
-    }
+    nbOfLaps = nbOfLapsDouble.ceil() + formationLap;
 
     // Allow up to 20% fuel saving
     for (int i = mandatoryPitStops; i <= nbOfPitStops; i++) {
