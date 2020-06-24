@@ -33,45 +33,15 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final _races = List<Race>();
-
-  void _editRace(Race race) async {
-
-    final result = await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => RaceDetails(),
-        // Pass the arguments as part of the RouteSettings. The
-        // DetailScreen reads the arguments from these settings.
-        settings: RouteSettings(
-          arguments: race,
-        ),
-      ),
-    );
-    setState(() {});
-  }
-  void _addRacePressed() async {
-    Race newRace = Race(carsList[0], tracksList[0], 'Full', 3600, true, 0, 1.0, tracksList[0].lapTime);
-
-    setState(() {
-      _races.add(newRace);
-    });
-
-    _editRace(_races.last);
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
+        /*
         actions: <Widget>[
           PopupMenuButton<int>(
             itemBuilder: (context) => [
-              PopupMenuItem(
-                value: 1,
-                child: Text("Favourite car"),
-              ),
               PopupMenuItem(
                 value: 2,
                 child: Text("Lap times"),
@@ -90,17 +60,12 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ],
           )
-        ],
+        ],*/
       ),
-      body: _raceList(),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _addRacePressed,
-        tooltip: 'Add new race',
-        child: Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      body: RaceInput(),
     );
   }
-
+/*
   Widget _raceList() {
     if (_races.isEmpty) {
       return Center(
@@ -125,5 +90,5 @@ class _MyHomePageState extends State<MyHomePage> {
         },
       );
     }
-  }
+  }*/
 }

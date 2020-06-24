@@ -3,20 +3,17 @@ import 'package:flutter/services.dart';
 import './cars.dart';
 import './tracks.dart';
 import './race.dart';
+import './race_overview.dart';
 
 class RaceInput extends StatefulWidget {
-  final Function() notifyParent;
-
-  RaceInput({Key key, this.notifyParent}) : super(key: key);
-
   @override
   _RaceInputState createState() => _RaceInputState();
 }
 
 class _RaceInputState extends State<RaceInput> {
   final _formKey = GlobalKey<FormState>();
+  Race _race = Race(carsList[0], tracksList[0], 'Full', 3600, true, 0, 1.0, tracksList[0].lapTime);
 
-  Race _race;
   int _durationHours;
   int _durationMinutes;
   int _lapTimeMinutes = 0;
@@ -51,7 +48,6 @@ class _RaceInputState extends State<RaceInput> {
 
   @override
   Widget build(BuildContext context) {
-    _race = ModalRoute.of(context).settings.arguments;
     _durationHours = (_race.raceDuration / 3600).floor();
     _durationMinutes =
         ((_race.raceDuration / 60) - _durationHours * 60).floor();
@@ -80,10 +76,20 @@ class _RaceInputState extends State<RaceInput> {
                   if (_formKey.currentState.validate()) {
                     _race.computeStrategies();
                     FocusScope.of(context).unfocus();
-                    widget.notifyParent();
+
+                    if (_race.strategies.length == 0) {
+                      _showErrorDialog();
+                    } else {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => RaceDetails(race: _race),
+                        ),
+                      );
+                    }
                   }
                 },
-                child: Text('Ok'),
+                child: Text('Go!'),
               ),
             ],
           ),
@@ -405,5 +411,32 @@ class _RaceInputState extends State<RaceInput> {
     setState(() {
       _race.mandatoryPitStops = value;
     });
+  }
+
+  Future<void> _showErrorDialog() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('No strategies found'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('Please try different settings.'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            FlatButton(
+              child: Text('Ok'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 }

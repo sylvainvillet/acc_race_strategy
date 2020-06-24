@@ -5,32 +5,20 @@ import './tracks.dart';
 import './race.dart';
 import './race_input.dart';
 
-class RaceDetails extends StatefulWidget {
-  @override
-  _RaceDetailsState createState() => _RaceDetailsState();
-}
+class RaceDetails extends StatelessWidget {
+  final Race race;
 
-class _RaceDetailsState extends State<RaceDetails> {
-  Race race;
+  RaceDetails({Key key, @required this.race}) : super(key: key);
+
   final margin = 10.0;
-
-  refresh() {
-    setState(() {});
-
-    if (race.strategies.length == 0) {
-      _showErrorDialog();
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
-    race = ModalRoute.of(context).settings.arguments;
-
     List<Tab> tabs = List<Tab>();
     List<Widget> centralWidgets = List<Widget>();
 
     tabs.add(Tab(text: 'Info'));
-    centralWidgets.add(RaceInput(notifyParent: refresh));
+    centralWidgets.add(raceInfo(context, race));
 
     if (race.strategies.length == 1) {
       tabs.add(Tab(text: 'Strategy'));
@@ -82,12 +70,6 @@ class _RaceDetailsState extends State<RaceDetails> {
           SizedBox(height: margin),
           _buildRow2("Mandatory pit stops:", race.mandatoryPitStops.toString()),
           SizedBox(height: margin),
-          RaisedButton(
-            onPressed: () {
-              Navigator.pop(context, 'Edit');
-            },
-            child: Text('Edit'),
-          ),
         ],
       ),
     );
@@ -213,30 +195,4 @@ class _RaceDetailsState extends State<RaceDetails> {
     );
   }
 
-  Future<void> _showErrorDialog() async {
-    return showDialog<void>(
-      context: context,
-      barrierDismissible: false, // user must tap button!
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('No strategies found'),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: <Widget>[
-                Text('Please try different settings.'),
-              ],
-            ),
-          ),
-          actions: <Widget>[
-            FlatButton(
-              child: Text('Ok'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
 }
