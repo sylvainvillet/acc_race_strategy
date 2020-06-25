@@ -26,7 +26,7 @@ class Race {
   int nbOfLaps;
   List<Strategy> strategies = List<Strategy>();
 
-  String getLapTimeString() {
+  String getLapTimeString(double lapTime) {
     int minutes = (lapTime / 60).floor();
     int seconds = (lapTime - minutes * 60).floor();
     int milliseconds = ((lapTime - lapTime.floor()) * 1000).floor();
@@ -69,11 +69,7 @@ class Race {
     print('nbOfLapsWithFullTank: ' + nbOfLapsWithFullTank.toString());
 
     // Calculate the number of laps
-    int timeLostPerPitStop = track.ksName == 'Spa' ? 90 : 60;
-    double nbOfLapsDouble =
-        (raceDuration - mandatoryPitStops * timeLostPerPitStop) /
-            lapTime; // TODO time lost in pit
-    nbOfLaps = nbOfLapsDouble.ceil() + formationLap;
+    nbOfLaps = _getNbOfLaps(raceDuration, formationLap, mandatoryPitStops, track.timeLostInPits, lapTime);
     print('nbOfLaps: ' + nbOfLaps.toString());
 
     // Number of pit stops without fuel saving
@@ -86,9 +82,7 @@ class Race {
     print('nbOfPitStops: ' + nbOfPitStops.toString());
 
     // Adjust number of laps
-    nbOfLapsDouble =
-        (raceDuration - nbOfPitStops * timeLostPerPitStop) / lapTime;
-    nbOfLaps = nbOfLapsDouble.ceil() + formationLap;
+    nbOfLaps = _getNbOfLaps(raceDuration, formationLap, nbOfPitStops, track.timeLostInPits, lapTime);
 
     // Allow up to 20% fuel saving
     for (int i = mandatoryPitStops; i <= nbOfPitStops; i++) {
@@ -178,9 +172,20 @@ class Race {
       }
     }
 
+    strategy.cutOffLow = _getAverageLapTime(raceDuration, formationLap, nbOfPitStops, track.timeLostInPits, nbOfLaps);
+    strategy.cutOffHigh = _getAverageLapTime(raceDuration, formationLap, nbOfPitStops, track.timeLostInPits, nbOfLaps - 1);
+
     print('strategy.startingFuel: ' + strategy.startingFuel.toString());
     print('strategy.stints: ' + strategy.stints.length.toString());
     return strategy;
+  }
+
+  double _getAverageLapTime(int raceDuration, int formationLap, int nbOfPitStops, int timeLostPerPitStop, int nbOfLaps) {
+    return (raceDuration - nbOfPitStops * timeLostPerPitStop) / (nbOfLaps - formationLap);
+  }
+
+  int _getNbOfLaps(int raceDuration, int formationLap, int nbOfPitStops, int timeLostPerPitStop, double lapTime) {
+    return ((raceDuration - nbOfPitStops * timeLostPerPitStop) / lapTime + formationLap).ceil();
   }
 }
 
@@ -188,6 +193,8 @@ class Strategy {
   int nbOfLaps = 0;
   int startingFuel = 0;
   double fuelSaving = 0;
+  double cutOffLow = 0.0;
+  double cutOffHigh = 0.0;
   List<Stint> stints;
   List<PitStop> pitStops;
 }

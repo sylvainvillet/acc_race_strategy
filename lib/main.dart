@@ -9,12 +9,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'ACC Race Strategy',
+      title: 'Strategist',
       theme: ThemeData(
         primarySwatch: Colors.red,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: MyHomePage(title: 'ACC Race Strategy'),
+      home: MyHomePage(title: 'ACC Strategist'),
     );
   }
 }
@@ -40,15 +40,11 @@ class _MyHomePageState extends State<MyHomePage> {
             itemBuilder: (context) => [
               PopupMenuItem(
                 value: 2,
-                child: Text("Lap times"),
+                child: Text("Reset lap times"),
               ),
               PopupMenuItem(
                 value: 3,
-                child: Text("Fuel usage"),
-              ),
-              PopupMenuItem(
-                value: 4,
-                child: Text("Strategy parameters"),
+                child: Text("Reset fuel usage"),
               ),
               PopupMenuItem(
                 value: 5,

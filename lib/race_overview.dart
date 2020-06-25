@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import './race.dart';
+import './utils.dart';
 
 class RaceDetails extends StatelessWidget {
   final Race race;
@@ -54,19 +55,21 @@ class RaceDetails extends StatelessWidget {
       padding: const EdgeInsets.all(32),
       child: Column(
         children: <Widget>[
-          _buildRowTitle("Parameters"),
+          buildRowTitle("Parameters"),
           SizedBox(height: margin),
-          _buildRow2("Car:", race.car.displayName),
+          buildRow2Texts("Car:", race.car.displayName),
           SizedBox(height: margin),
-          _buildRow2("Track:", race.track.displayName),
+          buildRow2Texts("Track:", race.track.displayName),
           SizedBox(height: margin),
-          _buildRow2("Duration:", race.getRaceDurationString()),
+          buildRow2Texts("Duration:", race.getRaceDurationString()),
           SizedBox(height: margin),
-          _buildRow2("Average lap time:", race.getLapTimeString()),
+          buildRow2Texts("Average lap time:", race.getLapTimeString(race.lapTime)),
           SizedBox(height: margin),
-          _buildRow2("Formation lap:", race.formationLap == 1 ? 'Full' : 'Short'),
+          buildRow2Texts(
+              "Formation lap:", race.formationLap == 1 ? 'Full' : 'Short'),
           SizedBox(height: margin),
-          _buildRow2("Mandatory pit stops:", race.mandatoryPitStops.toString()),
+          buildRow2Texts(
+              "Mandatory pit stops:", race.mandatoryPitStops.toString()),
           SizedBox(height: margin),
         ],
       ),
@@ -79,20 +82,24 @@ class RaceDetails extends StatelessWidget {
         padding: const EdgeInsets.all(32),
         child: Column(
           children: <Widget>[
-            _buildRowTitle("Overview"),
+            buildRowTitle("Overview"),
             SizedBox(height: margin),
-            _buildRow2("Laps:", strategy.nbOfLaps.toString()),
+            buildRow2Texts("Laps:", strategy.nbOfLaps.toString()),
             SizedBox(height: margin),
-            _buildRow2("Pit stops:", strategy.pitStops.length.toString()),
+            buildRow2Texts("Pit stops:", strategy.pitStops.length.toString()),
             SizedBox(height: margin),
-            _buildRow2(
+            buildRow2Texts("Lower cut-off:", race.getLapTimeString(strategy.cutOffLow)),
+            SizedBox(height: margin),
+            buildRow2Texts("Higher cut-off:", race.getLapTimeString(strategy.cutOffHigh)),
+            SizedBox(height: margin),
+            buildRow2Texts(
                 "Starting fuel:", strategy.startingFuel.toString() + ' L'),
             SizedBox(height: margin),
-            _buildRow2(
-                "Fuel saving:",
-                strategy.fuelSaving > 0
-                    ? (strategy.fuelSaving * 100).toStringAsFixed(0) + ' %'
-                    : 'No'),
+            buildRowTextAndWidget(
+              "Fuel saving:",
+              fuelSavingRow(strategy.fuelSaving),
+              fontWeight: FontWeight.normal,
+              flex: 1),
             SizedBox(height: 16.0),
             Divider(),
             SizedBox(height: 16.0),
@@ -101,6 +108,29 @@ class RaceDetails extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Widget fuelSavingRow(double fuelSaving) {
+    int fuelSavingPercent = (fuelSaving * 100).ceil();
+    if (fuelSavingPercent <= 0) {
+      return Text('No');
+    } else {
+      Color signColor = Colors.blue;
+      if (fuelSavingPercent > 15)
+        signColor = Colors.red;
+      else if (fuelSavingPercent > 10)
+        signColor = Colors.orange;
+
+      return Row(
+        children: <Widget>[
+          Text(fuelSavingPercent.toString() + ' %  '),
+          Icon(IconData(57346,
+              fontFamily: 'MaterialIcons'),
+              size: 15,
+          color: signColor,),
+        ],
+      );
+    }
   }
 
   Widget stintsAndPits(Strategy strategy) {
@@ -129,7 +159,7 @@ class RaceDetails extends StatelessWidget {
   Widget stintWidget(int index, Stint stint) {
     return Column(
       children: <Widget>[
-        _buildRow3(
+        buildRow3Texts(
             'Stint ' + (index + 1).toString() + ':',
             stint.nbOfLaps.toString() + " laps",
             (stint.fuel / stint.nbOfLaps).toStringAsFixed(2) + ' L/lap'),
@@ -141,7 +171,7 @@ class RaceDetails extends StatelessWidget {
   Widget pitStopWidget(int index, PitStop pitStop) {
     return Column(
       children: <Widget>[
-        _buildRow3(
+        buildRow3Texts(
             'Pit stop ' + (index + 1).toString() + ':',
             'Lap ' + pitStop.pitStopLap.toString(),
             pitStop.fuelToAdd.toString() + ' L'),
@@ -149,48 +179,4 @@ class RaceDetails extends StatelessWidget {
       ],
     );
   }
-
-  Widget _buildRowTitle(String text) {
-    return Row(
-      children: <Widget>[
-        Expanded(
-          child: Text(text, style: TextStyle(fontWeight: FontWeight.bold)),
-        ),
-        Spacer(),
-      ],
-    );
-  }
-
-  Widget _buildRow2(String text1, String text2) {
-    return Row(
-      children: <Widget>[
-        Expanded(
-          child: Text(text1),
-        ),
-        Expanded(
-          child: Text(text2),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildRow3(String text1, String text2, String text3) {
-    return Row(
-      children: <Widget>[
-        Expanded(
-          child: Text(
-            text1,
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-        ),
-        Expanded(
-          child: Text(text2),
-        ),
-        Expanded(
-          child: Text(text3),
-        ),
-      ],
-    );
-  }
-
 }

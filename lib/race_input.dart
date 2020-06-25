@@ -5,6 +5,7 @@ import './cars.dart';
 import './tracks.dart';
 import './race.dart';
 import './race_overview.dart';
+import './utils.dart';
 
 class RaceInput extends StatefulWidget {
   @override
@@ -103,8 +104,6 @@ class _RaceInputState extends State<RaceInput> {
               SizedBox(height: margin),
               trackRow(),
               SizedBox(height: margin),
-              lapTimeRow(),
-              SizedBox(height: margin),
               durationRow(),
               SizedBox(height: margin),
               formationLapRow(),
@@ -112,6 +111,8 @@ class _RaceInputState extends State<RaceInput> {
               refuelingAllowedRow(),
               SizedBox(height: margin),
               mandatoryPitStopRow(),
+              SizedBox(height: margin),
+              lapTimeRow(),
               SizedBox(height: margin),
               fuelUsageRow(),
               SizedBox(height: margin),
@@ -163,7 +164,7 @@ class _RaceInputState extends State<RaceInput> {
   }
 
   Widget carRow() {
-    return _buildRow(
+    return buildRowTextAndWidget(
       "Car:",
       DropdownButton(
         value: _race.car,
@@ -183,7 +184,7 @@ class _RaceInputState extends State<RaceInput> {
   }
 
   Widget trackRow() {
-    return _buildRow(
+    return buildRowTextAndWidget(
       "Track:",
       DropdownButton(
         value: _race.track,
@@ -195,7 +196,7 @@ class _RaceInputState extends State<RaceInput> {
   }
 
   Widget durationRow() {
-    return _buildRow(
+    return buildRowTextAndWidget(
       "Race length:",
       Row(
         children: <Widget>[
@@ -230,7 +231,7 @@ class _RaceInputState extends State<RaceInput> {
   }
 
   Widget lapTimeRow() {
-    return _buildRow(
+    return buildRowTextAndWidget(
       "Average\nlap time:",
       Row(
         children: <Widget>[
@@ -290,7 +291,7 @@ class _RaceInputState extends State<RaceInput> {
   }
 
   Widget formationLapRow() {
-    return _buildRow(
+    return buildRowTextAndWidget(
       "Formation lap:",
       DropdownButton(
         value: _race.formationLap,
@@ -316,7 +317,7 @@ class _RaceInputState extends State<RaceInput> {
   }
 
   Widget refuelingAllowedRow() {
-    return _buildRow(
+    return buildRowTextAndWidget(
       "Refueling allowed:",
       Row(
         children: <Widget>[
@@ -334,7 +335,7 @@ class _RaceInputState extends State<RaceInput> {
   }
 
   Widget mandatoryPitStopRow() {
-    return _buildRow(
+    return buildRowTextAndWidget(
       "Mandatory pit stops:",
       DropdownButton(
         value: _race.mandatoryPitStops,
@@ -346,7 +347,7 @@ class _RaceInputState extends State<RaceInput> {
   }
 
   Widget fuelUsageRow() {
-    return _buildRow(
+    return buildRowTextAndWidget(
       "Fuel usage:",
       Row(
         children: <Widget>[
@@ -367,6 +368,7 @@ class _RaceInputState extends State<RaceInput> {
                 }),
           ),
           Expanded(
+            flex: 2,
             child: Text("L/Lap"),
           ),
         ],
@@ -440,20 +442,6 @@ class _RaceInputState extends State<RaceInput> {
           ],
         );
       },
-    );
-  }
-
-  Widget _buildRow(String text, Widget inputWidget) {
-    return Row(
-      children: <Widget>[
-        Expanded(
-          child: Text(text, style: TextStyle(fontWeight: FontWeight.bold)),
-        ),
-        Expanded(
-          flex: 2,
-          child: inputWidget,
-        ),
-      ],
     );
   }
 }
