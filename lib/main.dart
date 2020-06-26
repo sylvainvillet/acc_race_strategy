@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:package_info/package_info.dart';
+import 'package:url_launcher/url_launcher.dart';
 import './race_input.dart';
 import './utils.dart';
 
@@ -30,7 +31,7 @@ class HomePage extends StatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
-enum PopupMenuItems { resetLapTimes, resetFuelUsages, about }
+enum PopupMenuItems { resetLapTimes, resetFuelUsages, donate, about }
 
 class _HomePageState extends State<HomePage> {
   final GlobalKey<RaceInputState> _key = GlobalKey();
@@ -52,6 +53,10 @@ class _HomePageState extends State<HomePage> {
                 child: Text("Reset fuel usages"),
               ),
               PopupMenuItem(
+                value: PopupMenuItems.donate,
+                child: Text("Donate"),
+              ),
+              PopupMenuItem(
                 value: PopupMenuItems.about,
                 child: Text("About"),
               ),
@@ -63,6 +68,9 @@ class _HomePageState extends State<HomePage> {
                   break;
                 case PopupMenuItems.resetFuelUsages:
                   _showResetFuelUsagesPopup(context);
+                  break;
+                case PopupMenuItems.donate:
+                  _donateButtonClicked();
                   break;
                 case PopupMenuItems.about:
                   _showAboutPopup(context);
@@ -175,5 +183,12 @@ class _HomePageState extends State<HomePage> {
             Text('Special thanks to ElderCold'),
           ],
         ));
+  }
+
+  void _donateButtonClicked() async {
+    const url = 'https://www.paypal.me/sylvainvillet';
+    if (await canLaunch(url)) {
+      await launch(url);
+    }
   }
 }
