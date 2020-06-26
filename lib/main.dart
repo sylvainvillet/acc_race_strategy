@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import './race_input.dart';
+import './utils.dart';
 
 void main() {
   runApp(MyApp());
@@ -28,59 +29,122 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => _MyHomePageState();
 }
 
+enum PopupMenuItems { resetLapTimes, resetFuelUsages, about }
+
 class _MyHomePageState extends State<MyHomePage> {
+  final GlobalKey<RaceInputState> _key = GlobalKey();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
-        /*
         actions: <Widget>[
-          PopupMenuButton<int>(
-            itemBuilder: (context) => [
+          PopupMenuButton<PopupMenuItems>(
+            itemBuilder: (context) =>
+            [
               PopupMenuItem(
-                value: 2,
+                value: PopupMenuItems.resetLapTimes,
                 child: Text("Reset lap times"),
               ),
               PopupMenuItem(
-                value: 3,
-                child: Text("Reset fuel usage"),
+                value: PopupMenuItems.resetFuelUsages,
+                child: Text("Reset fuel usages"),
               ),
               PopupMenuItem(
-                value: 5,
+                value: PopupMenuItems.about,
                 child: Text("About"),
               ),
             ],
+            onSelected: (PopupMenuItems result) {
+              switch (result) {
+                case PopupMenuItems.resetLapTimes:
+                  _showResetLapTimesPopup(context);
+                  break;
+                case PopupMenuItems.resetFuelUsages:
+                  _showResetFuelUsagesPopup(context);
+                  break;
+                case PopupMenuItems.about:
+                  showSimplePopup(context, 'About', 'ACC Strategist v1.0.0\nDevelopped by Sylvain Villet');
+                  break;
+              }
+            },
           )
-        ],*/
+        ],
       ),
-      body: RaceInput(),
+      body: RaceInput(key: _key),
     );
   }
-/*
-  Widget _raceList() {
-    if (_races.isEmpty) {
-      return Center(
-          child: Text('Tap the "+" button to enter a new race.')
-          );
-    } else {
-      return ListView.builder(
-        padding: EdgeInsets.all(16.0),
-        itemCount: _races.length * 2,
-        itemBuilder: (context, i) {
-          if (i.isOdd) return Divider();
 
-          // Reverse order to have the most recent on top
-          final index = _races.length - i ~/ 2 - 1;
+  void _showResetLapTimesPopup(BuildContext context) {
+    // set up the buttons
+    Widget cancelButton = FlatButton(
+      child: Text("Cancel"),
+      onPressed:  () {
+        Navigator.of(context).pop(); // dismiss dialog
+      },
+    );
+    Widget continueButton = FlatButton(
+      child: Text("Continue"),
+      onPressed:  () {
+        _key.currentState.resetLapTimes();
+        Navigator.of(context).pop(); // dismiss dialog
+        showSimplePopup(context, 'Reset lap times', 'Lap times have been reset to default values.');
+      },
+    );
 
-          return ListTile(
-            title: Text(_races[index].getCarTrackAndDuration()),
-            onTap: () {
-              _editRace(_races[index]);
-            },
-          );
-        },
-      );
-    }
-  }*/
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text("Reset lap times"),
+      content: Text("Are you sure you want to reset the lap times to default values?"),
+      actions: [
+        cancelButton,
+        continueButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
+  void _showResetFuelUsagesPopup(BuildContext context) {
+    // set up the buttons
+    Widget cancelButton = FlatButton(
+      child: Text("Cancel"),
+      onPressed:  () {
+        Navigator.of(context).pop(); // dismiss dialog
+      },
+    );
+    Widget continueButton = FlatButton(
+      child: Text("Continue"),
+      onPressed:  () {
+        _key.currentState.resetFuelUsages();
+        Navigator.of(context).pop(); // dismiss dialog
+        showSimplePopup(context, 'Reset fuel usages', 'Fuel usages have been reset to default values.');
+      },
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text("Reset fuel usages"),
+      content: Text("Are you sure you want to reset the fuel usages to default values?"),
+      actions: [
+        cancelButton,
+        continueButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
 }

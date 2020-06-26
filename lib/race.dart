@@ -26,23 +26,6 @@ class Race {
   int nbOfLaps;
   List<Strategy> strategies = List<Strategy>();
 
-  String getLapTimeString(double lapTime) {
-    int minutes = (lapTime / 60).floor();
-    int seconds = (lapTime - minutes * 60).floor();
-    int milliseconds = ((lapTime - lapTime.floor()) * 1000).floor();
-
-    String returnValue = minutes.toString() + ':';
-
-    if (seconds < 10) returnValue += '0';
-    returnValue += seconds.toString() + '.';
-
-    if (milliseconds < 100) returnValue += '0';
-    if (milliseconds < 10) returnValue += '0';
-    returnValue += milliseconds.toString();
-
-    return returnValue;
-  }
-
   String getRaceDurationString() {
     int hours = (raceDuration / 3600).floor();
     int minutes = (raceDuration / 60 - hours * 60).floor();

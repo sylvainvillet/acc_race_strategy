@@ -63,7 +63,7 @@ class RaceDetails extends StatelessWidget {
           SizedBox(height: margin),
           buildRow2Texts("Duration:", race.getRaceDurationString()),
           SizedBox(height: margin),
-          buildRow2Texts("Average lap time:", race.getLapTimeString(race.lapTime)),
+          buildRow2Texts("Average lap time:", getLapTimeString(race.lapTime)),
           SizedBox(height: margin),
           buildRow2Texts(
               "Formation lap:", race.formationLap == 1 ? 'Full' : 'Short'),
@@ -88,9 +88,9 @@ class RaceDetails extends StatelessWidget {
             SizedBox(height: margin),
             buildRow2Texts("Pit stops:", strategy.pitStops.length.toString()),
             SizedBox(height: margin),
-            buildRow2Texts("Lower cut-off:", race.getLapTimeString(strategy.cutOffLow)),
+            buildRow2Texts("Lower cut-off:", getLapTimeString(strategy.cutOffLow)),
             SizedBox(height: margin),
-            buildRow2Texts("Higher cut-off:", race.getLapTimeString(strategy.cutOffHigh)),
+            buildRow2Texts("Higher cut-off:", getLapTimeString(strategy.cutOffHigh)),
             SizedBox(height: margin),
             buildRow2Texts(
                 "Starting fuel:", strategy.startingFuel.toString() + ' L'),

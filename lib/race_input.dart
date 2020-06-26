@@ -1,21 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import './cars.dart';
 import './tracks.dart';
 import './race.dart';
 import './race_overview.dart';
+import './fuel_usage_default.dart';
 import './utils.dart';
 
 class RaceInput extends StatefulWidget {
+  RaceInput({Key key}) : super(key: key);
+
   @override
-  _RaceInputState createState() => _RaceInputState();
+  RaceInputState createState() => RaceInputState();
 }
 
-class _RaceInputState extends State<RaceInput> {
+class RaceInputState extends State<RaceInput> {
   final _formKey = GlobalKey<FormState>();
   Race _race = Race(
-      carsList[0], tracksList[0], 1, 3600, true, 0, 1.0, tracksList[0].lapTime);
+      carsList[0], tracksList[0], 1, 3600, true, 0, 3.0, tracksList[0].lapTime);
 
   final margin = 10.0;
 
@@ -24,6 +26,8 @@ class _RaceInputState extends State<RaceInput> {
   int _lapTimeMinutes = 0;
   int _lapTimeSeconds = 0;
   int _lapTimeMilliseconds = 0;
+  int _fuelUsageLiters = 1;
+  int _fuelUsageCentiliters = 0;
 
   List<DropdownMenuItem<Car>> _carsDropDownMenuItems;
   List<DropdownMenuItem<Track>> _tracksDropDownMenuItems;
@@ -34,6 +38,8 @@ class _RaceInputState extends State<RaceInput> {
   List<DropdownMenuItem<int>> _lapTimeSecondsDropDownMenuItems;
   List<DropdownMenuItem<int>> _lapTimeMillisecondsDropDownMenuItems;
   List<DropdownMenuItem<int>> _mandatoryPitStopsDropDownMenuItems;
+  List<DropdownMenuItem<int>> _fuelUsageLitersDropDownMenuItems;
+  List<DropdownMenuItem<int>> _fuelUsageCentilitersDropDownMenuItems;
 
   @override
   void initState() {
@@ -42,11 +48,14 @@ class _RaceInputState extends State<RaceInput> {
     _formationLapDropDownMenuItems = getFormationLapDropDownMenuItems();
     _durationHoursDropDownMenuItems = getIntDropDownMenuItems(0, 24, 1, 0);
     _durationMinutesDropDownMenuItems = getIntDropDownMenuItems(0, 55, 5, 1);
-    _lapTimeMinutesDropDownMenuItems = getIntDropDownMenuItems(1, 2, 1, 0);
+    _lapTimeMinutesDropDownMenuItems = getIntDropDownMenuItems(0, 2, 1, 0);
     _lapTimeSecondsDropDownMenuItems = getIntDropDownMenuItems(0, 59, 1, 1);
     _lapTimeMillisecondsDropDownMenuItems =
         getIntDropDownMenuItems(0, 900, 100, 2);
-    _mandatoryPitStopsDropDownMenuItems = getIntDropDownMenuItems(0, 10, 1, 0);
+    _mandatoryPitStopsDropDownMenuItems = getIntDropDownMenuItems(0, 23, 1, 0);
+    _fuelUsageLitersDropDownMenuItems = getIntDropDownMenuItems(0, 4, 1, 0);
+    _fuelUsageCentilitersDropDownMenuItems =
+        getIntDropDownMenuItems(0, 99, 1, 1);
 
     _loadSettings();
 
@@ -66,8 +75,8 @@ class _RaceInputState extends State<RaceInput> {
       _race.raceDuration = settings.getInt('raceDuration') ?? 3600;
       _race.refuelingAllowed = settings.getBool('refuelingAllowed') ?? true;
       _race.mandatoryPitStops = settings.getInt('mandatoryPitStops') ?? 0;
-      _race.fuelUsage = settings.getDouble('fuelUsage') ?? 3.0;
-      _race.lapTime = settings.getDouble('lapTime') ?? _race.track.lapTime;
+      _loadLapTime();
+      _loadFuelUsage();
 
       _durationHours = (_race.raceDuration / 3600).floor();
       _durationMinutes =
@@ -86,8 +95,66 @@ class _RaceInputState extends State<RaceInput> {
     settings.setInt('raceDuration', _race.raceDuration);
     settings.setBool('refuelingAllowed', _race.refuelingAllowed);
     settings.setInt('mandatoryPitStops', _race.mandatoryPitStops);
-    settings.setDouble('fuelUsage', _race.fuelUsage);
-    settings.setDouble('lapTime', _race.lapTime);
+    _saveLapTime();
+    _saveFuelUsage();
+  }
+
+  void _loadLapTime() async {
+    final settings = await SharedPreferences.getInstance();
+    setState(() {
+      _race.lapTime = settings.getDouble(
+        getLapTimeSettingsKey(_race.track, _race.car)) ??
+          _race.track.lapTime;
+
+      _lapTimeMinutes = (_race.lapTime / 60).floor();
+      _lapTimeSeconds = (_race.lapTime - _lapTimeMinutes * 60).floor();
+      _lapTimeMilliseconds = ((_race.lapTime * 10).round() % 10) * 100;
+    });
+  }
+
+  void _saveLapTime() async {
+    final settings = await SharedPreferences.getInstance();
+    settings.setDouble(
+        getLapTimeSettingsKey(_race.track, _race.car),
+        _race.lapTime);
+  }
+
+  void resetLapTimes() async {
+    final settings = await SharedPreferences.getInstance();
+    for (Car car in carsList)
+      for (Track track in tracksList)
+        settings.remove(
+            getLapTimeSettingsKey(track, car));
+
+    _loadLapTime();
+  }
+
+  void _loadFuelUsage() async {
+    final settings = await SharedPreferences.getInstance();
+    setState(() {
+      _race.fuelUsage = settings.getDouble(
+          getFuelUsageSettingsKey(_race.track, _race.car))??
+          getFuelUsageDefault(_race.car, _race.track);
+      _fuelUsageLiters = _race.fuelUsage.floor();
+      _fuelUsageCentiliters = (_race.fuelUsage * 100).floor() % 100;
+    });
+  }
+
+  void _saveFuelUsage() async {
+    final settings = await SharedPreferences.getInstance();
+    settings.setDouble(
+        getFuelUsageSettingsKey(_race.track, _race.car),
+        _race.fuelUsage);
+  }
+
+  void resetFuelUsages() async {
+    final settings = await SharedPreferences.getInstance();
+    for (Car car in carsList)
+      for (Track track in tracksList)
+        settings.remove(
+            getFuelUsageSettingsKey(track, car));
+
+    _loadFuelUsage();
   }
 
   @override
@@ -122,7 +189,10 @@ class _RaceInputState extends State<RaceInput> {
                     _race.computeStrategies();
                     FocusScope.of(context).unfocus();
 
-                    if (_race.strategies.length == 0) {
+                    if (_race.raceDuration == 0 ||
+                        _race.strategies.length == 0 ||
+                        (_race.strategies[0].nbOfLaps <=
+                            _race.strategies[0].pitStops.length)) {
                       _showErrorDialog();
                     } else {
                       Navigator.push(
@@ -142,17 +212,6 @@ class _RaceInputState extends State<RaceInput> {
         ),
       ),
     );
-  }
-
-  void updateLapTime() {
-    setState(() {
-      _lapTimeMinutes = (_race.track.lapTime / 60).floor();
-      _lapTimeSeconds = (_race.track.lapTime - _lapTimeMinutes * 60).floor();
-      _lapTimeMilliseconds = ((_race.track.lapTime * 10).round() % 10) * 100;
-
-      _race.lapTime =
-          _lapTimeMinutes * 60 + _lapTimeSeconds + _lapTimeMilliseconds / 1000;
-    });
   }
 
   List<DropdownMenuItem<Car>> getCarsDropDownMenuItems() {
@@ -302,20 +361,6 @@ class _RaceInputState extends State<RaceInput> {
     );
   }
 
-  List<DropdownMenuItem<int>> getIntDropDownMenuItems(
-      int min, int max, int increment, int padding) {
-    List<DropdownMenuItem<int>> items = List();
-    String value;
-    for (int i = min; i <= max; i += increment) {
-      value = '';
-      if (padding == 2 && i < 100) value += '0';
-      if (padding >= 1 && i < 10) value += '0';
-      value += i.toString();
-      items.add(DropdownMenuItem(value: i, child: Text(value)));
-    }
-    return items;
-  }
-
   Widget refuelingAllowedRow() {
     return buildRowTextAndWidget(
       "Refueling allowed:",
@@ -336,14 +381,20 @@ class _RaceInputState extends State<RaceInput> {
 
   Widget mandatoryPitStopRow() {
     return buildRowTextAndWidget(
-      "Mandatory pit stops:",
-      DropdownButton(
-        value: _race.mandatoryPitStops,
-        items: _mandatoryPitStopsDropDownMenuItems,
-        onChanged: mandatoryPitStopChanged,
-        isExpanded: true,
-      ),
-    );
+        "Mandatory pit stops:",
+        Row(
+          children: <Widget>[
+            Expanded(
+              child: DropdownButton(
+                value: _race.mandatoryPitStops,
+                items: _mandatoryPitStopsDropDownMenuItems,
+                onChanged: mandatoryPitStopChanged,
+                isExpanded: true,
+              ),
+            ),
+            Spacer(flex: 3),
+          ],
+        ));
   }
 
   Widget fuelUsageRow() {
@@ -352,24 +403,39 @@ class _RaceInputState extends State<RaceInput> {
       Row(
         children: <Widget>[
           Expanded(
-            child: TextFormField(
-                initialValue: _race.fuelUsage > 0.0
-                    ? _race.fuelUsage.toStringAsFixed(2)
-                    : '',
-                keyboardType: TextInputType.number,
-                validator: (String value) {
-                  var fuelUsage = double.tryParse(value);
-                  if (fuelUsage != null) {
-                    _race.fuelUsage = fuelUsage;
-                    return null;
-                  } else {
-                    return 'Invalid value';
-                  }
-                }),
+            flex: 2,
+            child: DropdownButton(
+              value: _fuelUsageLiters,
+              items: _fuelUsageLitersDropDownMenuItems,
+              onChanged: (int value) {
+                setState(() {
+                  _fuelUsageLiters = value;
+                  _race.fuelUsage =
+                      _fuelUsageLiters + _fuelUsageCentiliters / 100;
+                });
+              },
+              isExpanded: true,
+            ),
           ),
+          Expanded(child: Text('.', textAlign: TextAlign.center)),
           Expanded(
             flex: 2,
-            child: Text("L/Lap"),
+            child: DropdownButton(
+              value: _fuelUsageCentiliters,
+              items: _fuelUsageCentilitersDropDownMenuItems,
+              onChanged: (int value) {
+                setState(() {
+                  _fuelUsageCentiliters = value;
+                  _race.fuelUsage =
+                      _fuelUsageLiters + _fuelUsageCentiliters / 100;
+                });
+              },
+              isExpanded: true,
+            ),
+          ),
+          Expanded(
+            flex: 3,
+            child: Text(' L/lap'),
           ),
         ],
       ),
@@ -377,11 +443,11 @@ class _RaceInputState extends State<RaceInput> {
   }
 
   void carChanged(Car newCar) async {
-    final settings = await SharedPreferences.getInstance();
     setState(() {
       _race.car = newCar;
     });
-    settings.setString('car_ks_name', _race.car.ksName);
+    _loadLapTime();
+    _loadFuelUsage();
   }
 
   void trackChanged(Track newTrack) {
@@ -389,7 +455,8 @@ class _RaceInputState extends State<RaceInput> {
     setState(() {
       _race.track = newTrack;
     });
-    updateLapTime();
+    _loadLapTime();
+    _loadFuelUsage();
   }
 
   void hoursChanged(int value) {
