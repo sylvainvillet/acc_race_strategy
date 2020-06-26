@@ -38,13 +38,14 @@ Widget buildRowTitle(String text) {
   );
 }
 
-Widget buildRow2Texts(String text1, String text2) {
+Widget buildRow2Texts(String text1, String text2, {int flex = 2}) {
   return Row(
     children: <Widget>[
       Expanded(
         child: Text(text1),
       ),
       Expanded(
+        flex: flex,
         child: Text(text2),
       ),
     ],
@@ -99,7 +100,7 @@ List<DropdownMenuItem<int>> getIntDropDownMenuItems(
   return items;
 }
 
-Future<void> showSimplePopup(BuildContext context, String title, String content, {String button = 'Ok'}) async {
+Future<void> showSimplePopup(BuildContext context, String title, Widget content, {String button = 'Ok'}) async {
   return showDialog<void>(
     context: context,
     barrierDismissible: true,
@@ -109,7 +110,7 @@ Future<void> showSimplePopup(BuildContext context, String title, String content,
         content: SingleChildScrollView(
           child: ListBody(
             children: <Widget>[
-              Text(content),
+              content,
             ],
           ),
         ),

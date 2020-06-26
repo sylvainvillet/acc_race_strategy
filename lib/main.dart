@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:package_info/package_info.dart';
 import './race_input.dart';
 import './utils.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(AccStrategistApp());
 }
 
-class MyApp extends StatelessWidget {
+class AccStrategistApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -15,23 +16,23 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.red,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: MyHomePage(title: 'ACC Strategist'),
+      home: HomePage(title: 'ACC Strategist'),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+class HomePage extends StatefulWidget {
+  HomePage({Key key, this.title}) : super(key: key);
 
   final String title;
 
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  _HomePageState createState() => _HomePageState();
 }
 
 enum PopupMenuItems { resetLapTimes, resetFuelUsages, about }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _HomePageState extends State<HomePage> {
   final GlobalKey<RaceInputState> _key = GlobalKey();
 
   @override
@@ -41,8 +42,7 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
         actions: <Widget>[
           PopupMenuButton<PopupMenuItems>(
-            itemBuilder: (context) =>
-            [
+            itemBuilder: (context) => [
               PopupMenuItem(
                 value: PopupMenuItems.resetLapTimes,
                 child: Text("Reset lap times"),
@@ -65,7 +65,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   _showResetFuelUsagesPopup(context);
                   break;
                 case PopupMenuItems.about:
-                  showSimplePopup(context, 'About', 'ACC Strategist v1.0.0\nDevelopped by Sylvain Villet');
+                  _showAboutPopup(context);
                   break;
               }
             },
@@ -80,23 +80,25 @@ class _MyHomePageState extends State<MyHomePage> {
     // set up the buttons
     Widget cancelButton = FlatButton(
       child: Text("Cancel"),
-      onPressed:  () {
+      onPressed: () {
         Navigator.of(context).pop(); // dismiss dialog
       },
     );
     Widget continueButton = FlatButton(
       child: Text("Continue"),
-      onPressed:  () {
+      onPressed: () {
         _key.currentState.resetLapTimes();
         Navigator.of(context).pop(); // dismiss dialog
-        showSimplePopup(context, 'Reset lap times', 'Lap times have been reset to default values.');
+        showSimplePopup(context, 'Reset lap times',
+            Text('Lap times have been reset to default values.'));
       },
     );
 
     // set up the AlertDialog
     AlertDialog alert = AlertDialog(
       title: Text("Reset lap times"),
-      content: Text("Are you sure you want to reset the lap times to default values?"),
+      content: Text(
+          "Are you sure you want to reset the lap times to default values?"),
       actions: [
         cancelButton,
         continueButton,
@@ -116,23 +118,25 @@ class _MyHomePageState extends State<MyHomePage> {
     // set up the buttons
     Widget cancelButton = FlatButton(
       child: Text("Cancel"),
-      onPressed:  () {
+      onPressed: () {
         Navigator.of(context).pop(); // dismiss dialog
       },
     );
     Widget continueButton = FlatButton(
       child: Text("Continue"),
-      onPressed:  () {
+      onPressed: () {
         _key.currentState.resetFuelUsages();
         Navigator.of(context).pop(); // dismiss dialog
-        showSimplePopup(context, 'Reset fuel usages', 'Fuel usages have been reset to default values.');
+        showSimplePopup(context, 'Reset fuel usages',
+            Text('Fuel usages have been reset to default values.'));
       },
     );
 
     // set up the AlertDialog
     AlertDialog alert = AlertDialog(
       title: Text("Reset fuel usages"),
-      content: Text("Are you sure you want to reset the fuel usages to default values?"),
+      content: Text(
+          "Are you sure you want to reset the fuel usages to default values?"),
       actions: [
         cancelButton,
         continueButton,
@@ -146,5 +150,30 @@ class _MyHomePageState extends State<MyHomePage> {
         return alert;
       },
     );
+  }
+
+  void _showAboutPopup(BuildContext context) async {
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+
+    double margin = 10.0;
+    showSimplePopup(
+        context,
+        'About',
+        Column(
+          children: <Widget>[
+            Image(
+              image: AssetImage('assets/lollipop_man.png'),
+              width: 200,
+              height: 200,
+            ),
+            SizedBox(height: margin),
+            Text(packageInfo.appName + ' v' + packageInfo.version,
+                style: TextStyle(fontWeight: FontWeight.bold)),
+            SizedBox(height: margin),
+            Text('Developped by Sylvain Villet'),
+            SizedBox(height: margin),
+            Text('Special thanks to ElderCold'),
+          ],
+        ));
   }
 }

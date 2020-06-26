@@ -49,11 +49,9 @@ class Race {
 
     // Calculate the max number of laps with full tank
     final double nbOfLapsWithFullTank = car.tank / fuelUsage;
-    print('nbOfLapsWithFullTank: ' + nbOfLapsWithFullTank.toString());
 
     // Calculate the number of laps
     nbOfLaps = _getNbOfLaps(raceDuration, formationLap, mandatoryPitStops, track.timeLostInPits, lapTime);
-    print('nbOfLaps: ' + nbOfLaps.toString());
 
     // Number of pit stops without fuel saving
     int nbOfPitStops = mandatoryPitStops;
@@ -62,7 +60,6 @@ class Race {
         nbOfPitStops++;
       }
     }
-    print('nbOfPitStops: ' + nbOfPitStops.toString());
 
     // Adjust number of laps
     nbOfLaps = _getNbOfLaps(raceDuration, formationLap, nbOfPitStops, track.timeLostInPits, lapTime);
@@ -118,8 +115,7 @@ class Race {
 
         PitStop pitStop = new PitStop();
         pitStop.fuelToAdd = 0;
-        pitStop.pitStopLap = lap;
-        pitStop.changeTyres = true; // TODO
+        pitStop.pitStopLap = lap - formationLap;
         strategy.pitStops.add(pitStop);
         strategy.stints
             .add(Stint(nbOfLapsPerStint, realFuelUsage * nbOfLapsPerStint));
@@ -148,8 +144,7 @@ class Race {
 
         PitStop pitStop = new PitStop();
         pitStop.fuelToAdd = fuelNeeded;
-        pitStop.pitStopLap = lap;
-        pitStop.changeTyres = true; // TODO
+        pitStop.pitStopLap = lap - formationLap;
         strategy.pitStops.add(pitStop);
         strategy.stints.add(Stint(nbOfLapsPerStint, fuelNeeded.toDouble()));
       }
@@ -158,8 +153,6 @@ class Race {
     strategy.cutOffLow = _getAverageLapTime(raceDuration, formationLap, nbOfPitStops, track.timeLostInPits, nbOfLaps);
     strategy.cutOffHigh = _getAverageLapTime(raceDuration, formationLap, nbOfPitStops, track.timeLostInPits, nbOfLaps - 1);
 
-    print('strategy.startingFuel: ' + strategy.startingFuel.toString());
-    print('strategy.stints: ' + strategy.stints.length.toString());
     return strategy;
   }
 
@@ -184,21 +177,7 @@ class Strategy {
 
 class PitStop {
   int fuelToAdd = 0;
-  bool changeTyres = false;
-  bool driverSwap = false;
   int pitStopLap;
-
-  Duration getPitStopStillDuration() {
-    if (changeTyres || driverSwap) {
-      return Duration(seconds: 30);
-    } else {
-      double durationSeconds = 3 + fuelToAdd * 0.2;
-      return Duration(
-          seconds: durationSeconds.floor(),
-          milliseconds:
-              ((durationSeconds - durationSeconds.floor()) * 1000).floor());
-    }
-  }
 }
 
 class Stint {

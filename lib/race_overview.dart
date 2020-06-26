@@ -14,11 +14,6 @@ class RaceDetails extends StatelessWidget {
     List<Tab> tabs = List<Tab>();
     List<Widget> centralWidgets = List<Widget>();
 
-    /*
-    tabs.add(Tab(text: 'Info'));
-    centralWidgets.add(raceInfo(context, race));
-     */
-
     if (race.strategies.length == 1) {
       tabs.add(Tab(text: 'Strategy'));
     } else if (race.strategies.length == 2) {
@@ -50,32 +45,6 @@ class RaceDetails extends StatelessWidget {
     );
   }
 
-  Widget raceInfo(BuildContext context, Race race) {
-    return Container(
-      padding: const EdgeInsets.all(32),
-      child: Column(
-        children: <Widget>[
-          buildRowTitle("Parameters"),
-          SizedBox(height: margin),
-          buildRow2Texts("Car:", race.car.displayName),
-          SizedBox(height: margin),
-          buildRow2Texts("Track:", race.track.displayName),
-          SizedBox(height: margin),
-          buildRow2Texts("Duration:", race.getRaceDurationString()),
-          SizedBox(height: margin),
-          buildRow2Texts("Average lap time:", getLapTimeString(race.lapTime)),
-          SizedBox(height: margin),
-          buildRow2Texts(
-              "Formation lap:", race.formationLap == 1 ? 'Full' : 'Short'),
-          SizedBox(height: margin),
-          buildRow2Texts(
-              "Mandatory pit stops:", race.mandatoryPitStops.toString()),
-          SizedBox(height: margin),
-        ],
-      ),
-    );
-  }
-
   Widget strategyDetails(Strategy strategy) {
     return SingleChildScrollView(
       child: Container(
@@ -84,7 +53,7 @@ class RaceDetails extends StatelessWidget {
           children: <Widget>[
             buildRowTitle("Overview"),
             SizedBox(height: margin),
-            buildRow2Texts("Laps:", strategy.nbOfLaps.toString()),
+            buildRow2Texts("Laps:", strategy.nbOfLaps.toString() + ((race.formationLap == 1) ? ' (including formation lap)' : '')),
             SizedBox(height: margin),
             buildRow2Texts("Pit stops:", strategy.pitStops.length.toString()),
             SizedBox(height: margin),
@@ -99,7 +68,7 @@ class RaceDetails extends StatelessWidget {
               "Fuel saving:",
               fuelSavingRow(strategy.fuelSaving),
               fontWeight: FontWeight.normal,
-              flex: 1),
+              flex: 2),
             SizedBox(height: 16.0),
             Divider(),
             SizedBox(height: 16.0),
