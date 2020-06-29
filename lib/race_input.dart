@@ -19,13 +19,18 @@ class RaceInputState extends State<RaceInput> {
   Race _race = Race(
       carsList[0], tracksList[0], 1, 3600, true, 0, 3.0, tracksList[0].lapTime);
 
-  final margin = 10.0;
+  final margin = 8.0;
 
   int _durationHours;
   int _durationMinutes;
+
+  int _stintDurationHours;
+  int _stintDurationMinutes;
+
   int _lapTimeMinutes = 0;
   int _lapTimeSeconds = 0;
   int _lapTimeMilliseconds = 0;
+
   int _fuelUsageLiters = 1;
   int _fuelUsageCentiliters = 0;
 
@@ -34,6 +39,8 @@ class RaceInputState extends State<RaceInput> {
   List<DropdownMenuItem<int>> _formationLapDropDownMenuItems;
   List<DropdownMenuItem<int>> _durationHoursDropDownMenuItems;
   List<DropdownMenuItem<int>> _durationMinutesDropDownMenuItems;
+  List<DropdownMenuItem<int>> _stintDurationHoursDropDownMenuItems;
+  List<DropdownMenuItem<int>> _stintDurationMinutesDropDownMenuItems;
   List<DropdownMenuItem<int>> _lapTimeMinutesDropDownMenuItems;
   List<DropdownMenuItem<int>> _lapTimeSecondsDropDownMenuItems;
   List<DropdownMenuItem<int>> _lapTimeMillisecondsDropDownMenuItems;
@@ -48,6 +55,8 @@ class RaceInputState extends State<RaceInput> {
     _formationLapDropDownMenuItems = getFormationLapDropDownMenuItems();
     _durationHoursDropDownMenuItems = getIntDropDownMenuItems(0, 24, 1, 0);
     _durationMinutesDropDownMenuItems = getIntDropDownMenuItems(0, 55, 5, 1);
+    _stintDurationHoursDropDownMenuItems = getIntDropDownMenuItems(0, 1, 1, 0);
+    _stintDurationMinutesDropDownMenuItems = getIntDropDownMenuItems(0, 55, 5, 1);
     _lapTimeMinutesDropDownMenuItems = getIntDropDownMenuItems(0, 2, 1, 0);
     _lapTimeSecondsDropDownMenuItems = getIntDropDownMenuItems(0, 59, 1, 1);
     _lapTimeMillisecondsDropDownMenuItems =
@@ -73,6 +82,7 @@ class RaceInputState extends State<RaceInput> {
       _race.track = getTrack(trackName);
       _race.formationLap = settings.getInt('formationLap') ?? 1;
       _race.raceDuration = settings.getInt('raceDuration') ?? 3600;
+      _race.maxStintDuration = settings.getInt('maxStintDuration') ?? 6900; // 1h55
       _race.refuelingAllowed = settings.getBool('refuelingAllowed') ?? true;
       _race.mandatoryPitStops = settings.getInt('mandatoryPitStops') ?? 0;
       _loadLapTime();
@@ -81,6 +91,9 @@ class RaceInputState extends State<RaceInput> {
       _durationHours = (_race.raceDuration / 3600).floor();
       _durationMinutes =
           ((_race.raceDuration / 60) - _durationHours * 60).floor();
+      _stintDurationHours = (_race.maxStintDuration / 3600).floor();
+      _stintDurationMinutes =
+          ((_race.maxStintDuration / 60) - _stintDurationHours * 60).floor();
       _lapTimeMinutes = (_race.lapTime / 60).floor();
       _lapTimeSeconds = (_race.lapTime - _lapTimeMinutes * 60).floor();
       _lapTimeMilliseconds = ((_race.lapTime * 10).round() % 10) * 100;
@@ -93,6 +106,7 @@ class RaceInputState extends State<RaceInput> {
     settings.setString('trackName', _race.track.ksName);
     settings.setInt('formationLap', _race.formationLap);
     settings.setInt('raceDuration', _race.raceDuration);
+    settings.setInt('maxStintDuration', _race.maxStintDuration);
     settings.setBool('refuelingAllowed', _race.refuelingAllowed);
     settings.setInt('mandatoryPitStops', _race.mandatoryPitStops);
     _saveLapTime();
@@ -161,7 +175,7 @@ class RaceInputState extends State<RaceInput> {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Container(
-        padding: const EdgeInsets.all(32),
+        padding: const EdgeInsets.all(16),
         child: Form(
           key: _formKey,
           child: Column(
@@ -178,6 +192,8 @@ class RaceInputState extends State<RaceInput> {
               refuelingAllowedRow(),
               SizedBox(height: margin),
               mandatoryPitStopRow(),
+              SizedBox(height: margin),
+              maxStintDurationRow(),
               SizedBox(height: margin),
               lapTimeRow(),
               SizedBox(height: margin),
@@ -397,6 +413,34 @@ class RaceInputState extends State<RaceInput> {
         ));
   }
 
+  Widget maxStintDurationRow() {
+    return buildRowTextAndWidget(
+      "Max. stint duration:",
+      Row(
+        children: <Widget>[
+          Expanded(
+            child: DropdownButton(
+              value: _stintDurationHours,
+              items: _stintDurationHoursDropDownMenuItems,
+              onChanged: stintHoursChanged,
+              isExpanded: true,
+            ),
+          ),
+          Expanded(child: Text('h', textAlign: TextAlign.center)),
+          Expanded(
+            child: DropdownButton(
+              value: _stintDurationMinutes,
+              items: _stintDurationMinutesDropDownMenuItems,
+              onChanged: stintMinutesChanged,
+              isExpanded: true,
+            ),
+          ),
+          Expanded(child: Text('min', textAlign: TextAlign.center)),
+        ],
+      ),
+    );
+  }
+
   Widget fuelUsageRow() {
     return buildRowTextAndWidget(
       "Fuel usage:",
@@ -470,6 +514,20 @@ class RaceInputState extends State<RaceInput> {
     setState(() {
       _durationMinutes = value;
       _race.raceDuration = _durationHours * 3600 + _durationMinutes * 60;
+    });
+  }
+
+  void stintHoursChanged(int value) {
+    setState(() {
+      _stintDurationHours = value;
+      _race.maxStintDuration = _stintDurationHours * 3600 + _stintDurationMinutes * 60;
+    });
+  }
+
+  void stintMinutesChanged(int value) {
+    setState(() {
+      _stintDurationMinutes = value;
+      _race.maxStintDuration = _stintDurationHours * 3600 + _stintDurationMinutes * 60;
     });
   }
 

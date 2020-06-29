@@ -1,3 +1,4 @@
+import 'dart:math';
 import './cars.dart';
 import './tracks.dart';
 
@@ -17,6 +18,7 @@ class Race {
   Track track;
   int formationLap;
   int raceDuration;
+  int maxStintDuration;
   bool refuelingAllowed;
   int mandatoryPitStops;
   double fuelUsage;
@@ -53,8 +55,11 @@ class Race {
     // Calculate the number of laps
     nbOfLaps = _getNbOfLaps(raceDuration, formationLap, mandatoryPitStops, track.timeLostInPits, lapTime);
 
+    int minimumPitStops = (raceDuration / maxStintDuration).floor();
+    minimumPitStops = max<int>(minimumPitStops, mandatoryPitStops);
+
     // Number of pit stops without fuel saving
-    int nbOfPitStops = mandatoryPitStops;
+    int nbOfPitStops = minimumPitStops;
     if (refuelingAllowed && (nbOfLaps > nbOfLapsWithFullTank)) {
       while ((nbOfLaps / (nbOfPitStops + 1)).ceil() > nbOfLapsWithFullTank) {
         nbOfPitStops++;
@@ -65,7 +70,7 @@ class Race {
     nbOfLaps = _getNbOfLaps(raceDuration, formationLap, nbOfPitStops, track.timeLostInPits, lapTime);
 
     // Allow up to 20% fuel saving
-    for (int i = mandatoryPitStops; i <= nbOfPitStops; i++) {
+    for (int i = minimumPitStops; i <= nbOfPitStops; i++) {
       if (refuelingAllowed) {
         if ((nbOfLaps / (i + 1)).ceil() <=
             (nbOfLapsWithFullTank * 1.2).ceil()) {
