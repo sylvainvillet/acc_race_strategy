@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:theme_provider/theme_provider.dart';
 import './cars.dart';
 import './tracks.dart';
 import './race.dart';
@@ -214,7 +215,9 @@ class RaceInputState extends State<RaceInput> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => RaceDetails(race: _race),
+                          builder: (context) => ThemeConsumer(
+                            child: RaceDetails(race: _race),
+                          ),
                         ),
                       );
                     }

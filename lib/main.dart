@@ -29,6 +29,7 @@ class AccStrategistApp extends StatelessWidget {
           description: "Dark Theme",
           data: ThemeData(
             primarySwatch: Colors.red,
+            toggleableActiveColor: Colors.red,
             brightness: Brightness.dark,
             visualDensity: VisualDensity.adaptivePlatformDensity,
           ),
