@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:package_info/package_info.dart';
+import 'package:theme_provider/theme_provider.dart';
 import './race_input.dart';
 import './utils.dart';
 
@@ -10,13 +11,36 @@ void main() {
 class AccStrategistApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Strategist',
-      theme: ThemeData(
-        primarySwatch: Colors.red,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
+    return ThemeProvider(
+      saveThemesOnChange: true,
+      loadThemeOnInit: true,
+      themes: <AppTheme>[
+        AppTheme(
+          id: "light_theme",
+          description: "Light Theme",
+          data: ThemeData(
+            primarySwatch: Colors.red,
+            brightness: Brightness.light,
+            visualDensity: VisualDensity.adaptivePlatformDensity,
+          ),
+        ),
+        AppTheme(
+          id: "dark_theme",
+          description: "Dark Theme",
+          data: ThemeData(
+            primarySwatch: Colors.red,
+            brightness: Brightness.dark,
+            visualDensity: VisualDensity.adaptivePlatformDensity,
+          ),
+        ),
+      ],
+      child: MaterialApp(
+        title: 'ACC Strategist',
+        debugShowCheckedModeBanner: false,
+        home: ThemeConsumer(
+          child: HomePage(title: 'ACC Strategist'),
+        ),
       ),
-      home: HomePage(title: 'ACC Strategist'),
     );
   }
 }
@@ -30,7 +54,7 @@ class HomePage extends StatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
-enum PopupMenuItems { resetLapTimes, resetFuelUsages, about }
+enum PopupMenuItems { theme, resetLapTimes, resetFuelUsages, about }
 
 class _HomePageState extends State<HomePage> {
   final GlobalKey<RaceInputState> _key = GlobalKey();
@@ -43,6 +67,12 @@ class _HomePageState extends State<HomePage> {
         actions: <Widget>[
           PopupMenuButton<PopupMenuItems>(
             itemBuilder: (context) => [
+              PopupMenuItem(
+                value: PopupMenuItems.theme,
+                child: Text(ThemeProvider.themeOf(context).id == "dark_theme"
+                    ? "Light mode"
+                    : "Dark mode"),
+              ),
               PopupMenuItem(
                 value: PopupMenuItems.resetLapTimes,
                 child: Text("Reset lap times"),
@@ -58,6 +88,9 @@ class _HomePageState extends State<HomePage> {
             ],
             onSelected: (PopupMenuItems result) {
               switch (result) {
+                case PopupMenuItems.theme:
+                  ThemeProvider.controllerOf(context).nextTheme();
+                  break;
                 case PopupMenuItems.resetLapTimes:
                   _showResetLapTimesPopup(context);
                   break;
