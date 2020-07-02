@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:theme_provider/theme_provider.dart';
 import './cars.dart';
 import './tracks.dart';
 import './race.dart';
@@ -57,7 +55,8 @@ class RaceInputState extends State<RaceInput> {
     _durationHoursDropDownMenuItems = getIntDropDownMenuItems(0, 24, 1, 0);
     _durationMinutesDropDownMenuItems = getIntDropDownMenuItems(0, 55, 5, 1);
     _stintDurationHoursDropDownMenuItems = getIntDropDownMenuItems(0, 1, 1, 0);
-    _stintDurationMinutesDropDownMenuItems = getIntDropDownMenuItems(0, 55, 5, 1);
+    _stintDurationMinutesDropDownMenuItems =
+        getIntDropDownMenuItems(0, 55, 5, 1);
     _lapTimeMinutesDropDownMenuItems = getIntDropDownMenuItems(0, 2, 1, 0);
     _lapTimeSecondsDropDownMenuItems = getIntDropDownMenuItems(0, 59, 1, 1);
     _lapTimeMillisecondsDropDownMenuItems =
@@ -67,109 +66,39 @@ class RaceInputState extends State<RaceInput> {
     _fuelUsageCentilitersDropDownMenuItems =
         getIntDropDownMenuItems(0, 99, 1, 1);
 
-    _loadSettings();
+    _race.car = _carsDropDownMenuItems[0].value;
+    _race.track = _tracksDropDownMenuItems[0].value;
+    _race.formationLap = 1;
+    _race.raceDuration = 3600;
+    _race.maxStintDuration = 6900; // 1h55
+    _race.refuelingAllowed = true;
+    _race.mandatoryPitStops = 0;
+
+    _loadLapTime();
+    _loadFuelUsage();
+
+    _durationHours = (_race.raceDuration / 3600).floor();
+    _durationMinutes =
+        ((_race.raceDuration / 60) - _durationHours * 60).floor();
+    _stintDurationHours = (_race.maxStintDuration / 3600).floor();
+    _stintDurationMinutes =
+        ((_race.maxStintDuration / 60) - _stintDurationHours * 60).floor();
 
     super.initState();
   }
 
-  void _loadSettings() async {
-    final settings = await SharedPreferences.getInstance();
+  void _loadLapTime() {
+    _race.lapTime = _race.track.lapTime;
 
-    final carName = settings.getString('carName') ?? '';
-    final trackName = settings.getString('trackName') ?? '';
-
-    setState(() {
-      _race.car = getCar(carName);
-      _race.track = getTrack(trackName);
-      _race.formationLap = settings.getInt('formationLap') ?? 1;
-      _race.raceDuration = settings.getInt('raceDuration') ?? 3600;
-      _race.maxStintDuration = settings.getInt('maxStintDuration') ?? 6900; // 1h55
-      _race.refuelingAllowed = settings.getBool('refuelingAllowed') ?? true;
-      _race.mandatoryPitStops = settings.getInt('mandatoryPitStops') ?? 0;
-      _loadLapTime();
-      _loadFuelUsage();
-
-      _durationHours = (_race.raceDuration / 3600).floor();
-      _durationMinutes =
-          ((_race.raceDuration / 60) - _durationHours * 60).floor();
-      _stintDurationHours = (_race.maxStintDuration / 3600).floor();
-      _stintDurationMinutes =
-          ((_race.maxStintDuration / 60) - _stintDurationHours * 60).floor();
-      _lapTimeMinutes = (_race.lapTime / 60).floor();
-      _lapTimeSeconds = (_race.lapTime - _lapTimeMinutes * 60).floor();
-      _lapTimeMilliseconds = ((_race.lapTime * 10).round() % 10) * 100;
-    });
+    _lapTimeMinutes = (_race.lapTime / 60).floor();
+    _lapTimeSeconds = (_race.lapTime - _lapTimeMinutes * 60).floor();
+    _lapTimeMilliseconds = ((_race.lapTime * 10).round() % 10) * 100;
   }
 
-  void _saveSettings() async {
-    final settings = await SharedPreferences.getInstance();
-    settings.setString('carName', _race.car.ksName);
-    settings.setString('trackName', _race.track.ksName);
-    settings.setInt('formationLap', _race.formationLap);
-    settings.setInt('raceDuration', _race.raceDuration);
-    settings.setInt('maxStintDuration', _race.maxStintDuration);
-    settings.setBool('refuelingAllowed', _race.refuelingAllowed);
-    settings.setInt('mandatoryPitStops', _race.mandatoryPitStops);
-    _saveLapTime();
-    _saveFuelUsage();
-  }
-
-  void _loadLapTime() async {
-    final settings = await SharedPreferences.getInstance();
-    setState(() {
-      _race.lapTime = settings.getDouble(
-        getLapTimeSettingsKey(_race.track, _race.car)) ??
-          _race.track.lapTime;
-
-      _lapTimeMinutes = (_race.lapTime / 60).floor();
-      _lapTimeSeconds = (_race.lapTime - _lapTimeMinutes * 60).floor();
-      _lapTimeMilliseconds = ((_race.lapTime * 10).round() % 10) * 100;
-    });
-  }
-
-  void _saveLapTime() async {
-    final settings = await SharedPreferences.getInstance();
-    settings.setDouble(
-        getLapTimeSettingsKey(_race.track, _race.car),
-        _race.lapTime);
-  }
-
-  void resetLapTimes() async {
-    final settings = await SharedPreferences.getInstance();
-    for (Car car in carsList)
-      for (Track track in tracksList)
-        settings.remove(
-            getLapTimeSettingsKey(track, car));
-
-    _loadLapTime();
-  }
-
-  void _loadFuelUsage() async {
-    final settings = await SharedPreferences.getInstance();
-    setState(() {
-      _race.fuelUsage = settings.getDouble(
-          getFuelUsageSettingsKey(_race.track, _race.car))??
-          getFuelUsageDefault(_race.car, _race.track);
-      _fuelUsageLiters = _race.fuelUsage.floor();
-      _fuelUsageCentiliters = (_race.fuelUsage * 100).floor() % 100;
-    });
-  }
-
-  void _saveFuelUsage() async {
-    final settings = await SharedPreferences.getInstance();
-    settings.setDouble(
-        getFuelUsageSettingsKey(_race.track, _race.car),
-        _race.fuelUsage);
-  }
-
-  void resetFuelUsages() async {
-    final settings = await SharedPreferences.getInstance();
-    for (Car car in carsList)
-      for (Track track in tracksList)
-        settings.remove(
-            getFuelUsageSettingsKey(track, car));
-
-    _loadFuelUsage();
+  void _loadFuelUsage() {
+    _race.fuelUsage = getFuelUsageDefault(_race.car, _race.track);
+    _fuelUsageLiters = _race.fuelUsage.floor();
+    _fuelUsageCentiliters = (_race.fuelUsage * 100).floor() % 100;
   }
 
   @override
@@ -215,13 +144,15 @@ class RaceInputState extends State<RaceInput> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => ThemeConsumer(
-                            child: RaceDetails(race: _race),
+                          builder: (context) => Center(
+                            child: AspectRatio(
+                              aspectRatio: 0.5,
+                              child: RaceDetails(race: _race),
+                            ),
                           ),
                         ),
                       );
                     }
-                    _saveSettings();
                   }
                 },
                 child: Text('Go!'),
@@ -523,14 +454,16 @@ class RaceInputState extends State<RaceInput> {
   void stintHoursChanged(int value) {
     setState(() {
       _stintDurationHours = value;
-      _race.maxStintDuration = _stintDurationHours * 3600 + _stintDurationMinutes * 60;
+      _race.maxStintDuration =
+          _stintDurationHours * 3600 + _stintDurationMinutes * 60;
     });
   }
 
   void stintMinutesChanged(int value) {
     setState(() {
       _stintDurationMinutes = value;
-      _race.maxStintDuration = _stintDurationHours * 3600 + _stintDurationMinutes * 60;
+      _race.maxStintDuration =
+          _stintDurationHours * 3600 + _stintDurationMinutes * 60;
     });
   }
 
