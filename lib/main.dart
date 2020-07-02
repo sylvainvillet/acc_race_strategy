@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:package_info/package_info.dart';
 import 'package:theme_provider/theme_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import './race_input.dart';
 import './utils.dart';
 
@@ -30,6 +31,7 @@ class AccStrategistApp extends StatelessWidget {
           data: ThemeData(
             primarySwatch: Colors.red,
             toggleableActiveColor: Colors.red,
+            tabBarTheme: TabBarTheme(indicator: UnderlineTabIndicator (borderSide: BorderSide(width: 2.0, color: Colors.red))),
             brightness: Brightness.dark,
             visualDensity: VisualDensity.adaptivePlatformDensity,
           ),
@@ -59,6 +61,38 @@ enum PopupMenuItems { theme, resetLapTimes, resetFuelUsages, about }
 
 class _HomePageState extends State<HomePage> {
   final GlobalKey<RaceInputState> _key = GlobalKey();
+
+  bool _changelogPopupShown = true;
+  String version;
+
+  @override
+  void initState() {
+    _loadSettings();
+
+    super.initState();
+  }
+
+  void _loadSettings() async {
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    version = packageInfo.version;
+
+    final settings = await SharedPreferences.getInstance();
+
+    _changelogPopupShown =
+        settings.getBool('changelogPopupShown_v' + version) ?? false;
+
+    if (!_changelogPopupShown) {
+      _showChangelogPopup(context);
+      _changelogPopupShown = true;
+      _saveSettings();
+    }
+  }
+
+  void _saveSettings() async {
+    final settings = await SharedPreferences.getInstance();
+
+    settings.setBool('changelogPopupShown_v' + version, _changelogPopupShown);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -201,12 +235,23 @@ class _HomePageState extends State<HomePage> {
               height: 200,
             ),
             SizedBox(height: margin),
-            Text(packageInfo.appName + ' v' + packageInfo.version,
+            Text(packageInfo.appName + ' v' + version,
                 style: TextStyle(fontWeight: FontWeight.bold)),
             SizedBox(height: margin),
             Text('Developped by Sylvain Villet'),
             SizedBox(height: margin),
             Text('Special thanks to ElderCold'),
+          ],
+        ));
+  }
+
+  void _showChangelogPopup(BuildContext context) async {
+    showSimplePopup(
+        context,
+        'Changelog v' + version,
+        Column(
+          children: <Widget>[
+            Text('- Added Dark mode in settings menu'),
           ],
         ));
   }
