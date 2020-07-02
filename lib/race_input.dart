@@ -146,7 +146,7 @@ class RaceInputState extends State<RaceInput> {
                         MaterialPageRoute(
                           builder: (context) => Center(
                             child: AspectRatio(
-                              aspectRatio: 0.5,
+                              aspectRatio: 0.6,
                               child: RaceDetails(race: _race),
                             ),
                           ),

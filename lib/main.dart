@@ -17,7 +17,7 @@ class AccStrategistApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         home: Center(
           child: AspectRatio(
-            aspectRatio: 0.5,
+            aspectRatio: 0.6,
             child: HomePage(title: 'ACC Strategist'),
           ),
         ),
