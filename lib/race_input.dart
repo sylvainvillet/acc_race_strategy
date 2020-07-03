@@ -5,6 +5,7 @@ import './race.dart';
 import './race_overview.dart';
 import './fuel_usage_default.dart';
 import './utils.dart';
+import './platform.dart';
 
 class RaceInput extends StatefulWidget {
   RaceInput({Key key}) : super(key: key);
@@ -103,6 +104,8 @@ class RaceInputState extends State<RaceInput> {
 
   @override
   Widget build(BuildContext context) {
+    Platform platform = Platform();
+
     return SingleChildScrollView(
       child: Container(
         padding: const EdgeInsets.all(16),
@@ -146,7 +149,10 @@ class RaceInputState extends State<RaceInput> {
                         MaterialPageRoute(
                           builder: (context) => Center(
                             child: AspectRatio(
-                              aspectRatio: 0.6,
+                              aspectRatio: platform.isMobile()
+                                  ? MediaQuery.of(context).size.width /
+                                  MediaQuery.of(context).size.height
+                                  : 0.6,
                               child: RaceDetails(race: _race),
                             ),
                           ),

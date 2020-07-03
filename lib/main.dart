@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import './race_input.dart';
+import './platform.dart';
 import './utils.dart';
 
 void main() {
@@ -10,17 +11,15 @@ class AccStrategistApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        title: 'ACC Strategist',
-        theme: ThemeData(
-          primarySwatch: Colors.red,
-        ),
-        debugShowCheckedModeBanner: false,
-        home: Center(
-          child: AspectRatio(
-            aspectRatio: 0.6,
-            child: HomePage(title: 'ACC Strategist'),
-          ),
-        ),
+      title: 'ACC Strategist',
+      theme: ThemeData(
+        primarySwatch: Colors.red,
+        visualDensity: VisualDensity.adaptivePlatformDensity,
+      ),
+      debugShowCheckedModeBanner: false,
+      home: Center(
+        child: HomePage(title: 'ACC Strategist'),
+      ),
     );
   }
 }
@@ -41,29 +40,36 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-        actions: <Widget>[
-          PopupMenuButton<PopupMenuItems>(
-            itemBuilder: (context) =>
-            [
-              PopupMenuItem(
-                value: PopupMenuItems.about,
-                child: Text("About"),
-              ),
-            ],
-            onSelected: (PopupMenuItems result) {
-              switch (result) {
-                case PopupMenuItems.about:
-                  _showAboutPopup(context);
-                  break;
-              }
-            },
-          )
-        ],
+    Platform platform = Platform();
+
+    return AspectRatio(
+      aspectRatio: platform.isMobile()
+          ? MediaQuery.of(context).size.width /
+              MediaQuery.of(context).size.height
+          : 0.6,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(widget.title),
+          actions: <Widget>[
+            PopupMenuButton<PopupMenuItems>(
+              itemBuilder: (context) => [
+                PopupMenuItem(
+                  value: PopupMenuItems.about,
+                  child: Text("About"),
+                ),
+              ],
+              onSelected: (PopupMenuItems result) {
+                switch (result) {
+                  case PopupMenuItems.about:
+                    _showAboutPopup(context);
+                    break;
+                }
+              },
+            )
+          ],
+        ),
+        body: RaceInput(key: _key),
       ),
-      body: RaceInput(key: _key),
     );
   }
 
