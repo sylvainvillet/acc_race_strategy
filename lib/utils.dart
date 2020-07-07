@@ -27,6 +27,16 @@ String getLapTimeString(double lapTime) {
   return returnValue;
 }
 
+String getHMMDurationString(int seconds) {
+  int hours = (seconds / 3600).floor();
+  int minutes = (seconds / 60 - hours * 60).floor();
+  String returnValue = hours.toString() + 'h';
+  if (minutes < 10) returnValue += '0';
+  returnValue += minutes.toString();
+
+  return returnValue;
+}
+
 Widget buildRowTitle(String text) {
   return Row(
     children: <Widget>[
@@ -38,7 +48,7 @@ Widget buildRowTitle(String text) {
   );
 }
 
-Widget buildRow2Texts(String text1, String text2, {int flex = 2}) {
+Widget buildRow2Texts(String text1, String text2, {int flex = 1}) {
   return Row(
     children: <Widget>[
       Expanded(

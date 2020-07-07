@@ -238,7 +238,7 @@ class _HomePageState extends State<HomePage> {
             Text(packageInfo.appName + ' v' + version,
                 style: TextStyle(fontWeight: FontWeight.bold)),
             SizedBox(height: margin),
-            Text('Developped by Sylvain Villet'),
+            Text('Developed by Sylvain Villet'),
             SizedBox(height: margin),
             Text('Special thanks to ElderCold'),
           ],
@@ -250,8 +250,10 @@ class _HomePageState extends State<HomePage> {
         context,
         'Changelog v' + version,
         Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Text('- Added Dark mode in settings menu'),
+            Text('- Reworked strategy display'),
+            Text('- Added race time left for each pit stop'),
           ],
         ));
   }

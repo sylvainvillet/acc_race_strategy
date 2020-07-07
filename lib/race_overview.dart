@@ -7,7 +7,7 @@ class RaceDetails extends StatelessWidget {
 
   RaceDetails({Key key, @required this.race}) : super(key: key);
 
-  final margin = 10.0;
+  final margin = 4.0;
 
   @override
   Widget build(BuildContext context) {
@@ -48,30 +48,38 @@ class RaceDetails extends StatelessWidget {
   Widget strategyDetails(Strategy strategy) {
     return SingleChildScrollView(
       child: Container(
-        padding: const EdgeInsets.all(32),
+        padding: const EdgeInsets.all(4),
         child: Column(
           children: <Widget>[
-            buildRowTitle("Overview"),
-            SizedBox(height: margin),
-            buildRow2Texts("Laps:", strategy.nbOfLaps.toString() + ((race.formationLap == 1) ? ' (including formation lap)' : '')),
-            SizedBox(height: margin),
-            buildRow2Texts("Pit stops:", strategy.pitStops.length.toString()),
-            SizedBox(height: margin),
-            buildRow2Texts("Lower cut-off:", getLapTimeString(strategy.cutOffLow)),
-            SizedBox(height: margin),
-            buildRow2Texts("Higher cut-off:", getLapTimeString(strategy.cutOffHigh)),
-            SizedBox(height: margin),
-            buildRow2Texts(
-                "Starting fuel:", strategy.startingFuel.toString() + ' L'),
-            SizedBox(height: margin),
-            buildRowTextAndWidget(
-              "Fuel saving:",
-              fuelSavingRow(strategy.fuelSaving),
-              fontWeight: FontWeight.normal,
-              flex: 2),
-            SizedBox(height: 16.0),
-            Divider(),
-            SizedBox(height: 16.0),
+            Card(
+              elevation: 5,
+              child: ListTile(
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+                leading: Icon(Icons.info_outline),
+                title: Column(
+                  children: <Widget>[
+                    buildRow2Texts(
+                        "Laps:",
+                            ((race.formationLap == 1)
+                                ? 'Formation lap + '
+                                : '') + (strategy.nbOfLaps - race.formationLap).toString()),
+                    SizedBox(height: margin),
+                    buildRow2Texts(
+                        "Pit stops:", strategy.pitStops.length.toString()),
+                    SizedBox(height: margin),
+                    buildRow2Texts(
+                        "Lower cut-off:", getLapTimeString(strategy.cutOffLow)),
+                    SizedBox(height: margin),
+                    buildRow2Texts("Higher cut-off:",
+                        getLapTimeString(strategy.cutOffHigh)),
+                    SizedBox(height: margin),
+                    buildRowTextAndWidget(
+                        "Fuel saving:", fuelSavingRow(strategy.fuelSaving),
+                        fontWeight: FontWeight.normal, flex: 1)
+                  ],
+                ),
+              ),
+            ),
             stintsAndPits(strategy),
           ],
         ),
@@ -87,65 +95,78 @@ class RaceDetails extends StatelessWidget {
       Color signColor = Colors.blue;
       if (fuelSavingPercent > 15)
         signColor = Colors.red;
-      else if (fuelSavingPercent > 10)
-        signColor = Colors.orange;
+      else if (fuelSavingPercent > 10) signColor = Colors.orange;
 
       return Row(
         children: <Widget>[
           Text(fuelSavingPercent.toString() + ' %  '),
-          Icon(IconData(57346,
-              fontFamily: 'MaterialIcons'),
-              size: 15,
-          color: signColor,),
+          Icon(
+            Icons.warning,
+            size: 15,
+            color: signColor,
+          ),
         ],
       );
     }
   }
 
   Widget stintsAndPits(Strategy strategy) {
-    List<Widget> widgets = List<Widget>();
+    List<Card> cards = [
+      Card(
+        elevation: 5,
+        child: ListTile(
+          leading: Icon(Icons.flag, color: Colors.lightGreen),
+          title: Text('Race start'),
+          trailing: Text(strategy.startingFuel.toString() + ' L'),
+        ),
+      ),
+    ];
 
     int rows = strategy.stints.length + strategy.pitStops.length;
 
     for (int i = 0; i < rows; i++) {
       if (i % 2 == 0) {
         int stintIndex = (i / 2).floor();
-        widgets.add(stintWidget(stintIndex, strategy.stints[stintIndex]));
+        cards.add(stintWidget(stintIndex, strategy.stints[stintIndex]));
       } else {
         int pitStopIndex = (i / 2).floor();
-        widgets
-            .add(pitStopWidget(pitStopIndex, strategy.pitStops[pitStopIndex]));
+        cards.add(pitStopWidget(pitStopIndex, strategy.pitStops[pitStopIndex]));
       }
-      widgets.add(SizedBox(height: margin));
     }
 
     return Container(
         child: Column(
-      children: widgets,
+      children: cards,
     ));
   }
 
-  Widget stintWidget(int index, Stint stint) {
-    return Column(
-      children: <Widget>[
-        buildRow3Texts(
-            'Stint ' + (index + 1).toString() + ':',
-            stint.nbOfLaps.toString() + " laps",
-            (stint.fuel / stint.nbOfLaps).toStringAsFixed(2) + ' L/lap'),
-        SizedBox(height: margin),
-      ],
+  Card stintWidget(int index, Stint stint) {
+    return Card(
+      elevation: 5,
+      child: ListTile(
+        leading: Icon(Icons.directions_car),
+        title: Text('Stint ' + (index + 1).toString()),
+        subtitle: Text(((race.formationLap == 1 && index == 0)
+            ? 'Formation lap + ' + (stint.nbOfLaps - 1).toString()
+            : stint.nbOfLaps.toString()) +
+            " laps"),
+        trailing: Text((stint.fuel / stint.nbOfLaps).toStringAsFixed(2) +
+            ' L/lap'),
+      ),
     );
   }
 
-  Widget pitStopWidget(int index, PitStop pitStop) {
-    return Column(
-      children: <Widget>[
-        buildRow3Texts(
-            'Pit stop ' + (index + 1).toString() + ':',
-            'Lap ' + pitStop.pitStopLap.toString(),
-            pitStop.fuelToAdd.toString() + ' L'),
-        SizedBox(height: margin),
-      ],
+  Card pitStopWidget(int index, PitStop pitStop) {
+    return Card(
+      elevation: 5,
+      child: ListTile(
+        leading: Icon(Icons.local_gas_station),
+        title: Text('Pit stop ' + (index + 1).toString()),
+        subtitle: Text('Lap ' +
+            pitStop.pitStopLap.toString() + ', ' +
+            getHMMDurationString(pitStop.raceTimeLeft) + ' left'),
+        trailing: Text(pitStop.fuelToAdd.toString() + ' L'),
+      ),
     );
   }
 }
