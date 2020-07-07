@@ -68,13 +68,7 @@ class _HomePageState extends State<HomePage> {
             )
           ],
         ),
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              RaceInput(key: _key),
-            ],
-          ),
-        ),
+        body: RaceInput(key: _key),
       ),
     );
   }
