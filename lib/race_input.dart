@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import './cars.dart';
 import './tracks.dart';
 import './race.dart';
@@ -106,65 +107,77 @@ class RaceInputState extends State<RaceInput> {
   Widget build(BuildContext context) {
     Platform platform = Platform();
 
-    return SingleChildScrollView(
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              carRow(),
-              SizedBox(height: margin),
-              trackRow(),
-              SizedBox(height: margin),
-              durationRow(),
-              SizedBox(height: margin),
-              formationLapRow(),
-              SizedBox(height: margin),
-              refuelingAllowedRow(),
-              SizedBox(height: margin),
-              mandatoryPitStopRow(),
-              SizedBox(height: margin),
-              maxStintDurationRow(),
-              SizedBox(height: margin),
-              lapTimeRow(),
-              SizedBox(height: margin),
-              fuelUsageRow(),
-              SizedBox(height: margin),
-              RaisedButton(
-                onPressed: () {
-                  if (_formKey.currentState.validate()) {
-                    _race.computeStrategies();
-                    FocusScope.of(context).unfocus();
+    return Container(
+      padding: const EdgeInsets.all(16),
+      child: Form(
+        key: _formKey,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            carRow(),
+            SizedBox(height: margin),
+            trackRow(),
+            SizedBox(height: margin),
+            durationRow(),
+            SizedBox(height: margin),
+            formationLapRow(),
+            SizedBox(height: margin),
+            refuelingAllowedRow(),
+            SizedBox(height: margin),
+            mandatoryPitStopRow(),
+            SizedBox(height: margin),
+            maxStintDurationRow(),
+            SizedBox(height: margin),
+            lapTimeRow(),
+            SizedBox(height: margin),
+            fuelUsageRow(),
+            SizedBox(height: margin),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                InkWell(
+                  onTap: () {
+                    _openPlayStore();
+                  }, // handle your image tap here
+                  child: Image.asset(
+                    'assets/google_play_badge.png',
+                    width: 150,
+                  ),
+                ),
+                RaisedButton(
+                  onPressed: () {
+                    if (_formKey.currentState.validate()) {
+                      _race.computeStrategies();
+                      FocusScope.of(context).unfocus();
 
-                    if (_race.raceDuration == 0 ||
-                        _race.strategies.length == 0 ||
-                        (_race.strategies[0].nbOfLaps <=
-                            _race.strategies[0].pitStops.length)) {
-                      _showErrorDialog();
-                    } else {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => Center(
-                            child: AspectRatio(
-                              aspectRatio: platform.isMobile()
-                                  ? MediaQuery.of(context).size.width /
-                                  MediaQuery.of(context).size.height
-                                  : 0.6,
-                              child: RaceDetails(race: _race),
+                      if (_race.raceDuration == 0 ||
+                          _race.strategies.length == 0 ||
+                          (_race.strategies[0].nbOfLaps <=
+                              _race.strategies[0].pitStops.length)) {
+                        _showErrorDialog();
+                      } else {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => Center(
+                              child: AspectRatio(
+                                aspectRatio: platform.isMobile()
+                                    ? MediaQuery.of(context).size.width /
+                                    MediaQuery.of(context).size.height
+                                    : 0.6,
+                                child: RaceDetails(race: _race),
+                              ),
                             ),
                           ),
-                        ),
-                      );
+                        );
+                      }
                     }
-                  }
-                },
-                child: Text('Go!'),
-              ),
-            ],
-          ),
+                  },
+                  child: Text('Go!'),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );
@@ -510,5 +523,14 @@ class RaceInputState extends State<RaceInput> {
         );
       },
     );
+  }
+
+  _openPlayStore() async {
+    const url = 'https://play.google.com/store/apps/details?id=com.svillet.accstrategist';
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
   }
 }
