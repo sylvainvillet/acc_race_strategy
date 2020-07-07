@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import './race_input.dart';
 import './platform.dart';
 import './utils.dart';
@@ -68,9 +69,32 @@ class _HomePageState extends State<HomePage> {
             )
           ],
         ),
-        body: RaceInput(key: _key),
+        body: Column(
+          children: [
+            RaceInput(key: _key),
+            SizedBox(height: 24.0,),
+            InkWell(
+              onTap: () {
+                _openPlayStore();
+              }, // handle your image tap here
+              child: Image.asset(
+                'assets/google_play_badge.png',
+                width: 200,
+              ),
+            ),
+          ],
+        ),
       ),
     );
+  }
+
+  _openPlayStore() async {
+    const url = 'https://play.google.com/store/apps/details?id=com.svillet.accstrategist';
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
   }
 
   void _showAboutPopup(BuildContext context) async {

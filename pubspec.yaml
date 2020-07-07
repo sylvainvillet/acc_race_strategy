@@ -1,5 +1,5 @@
 name: accracestrategy
-description: A new Flutter application.
+description: ACC Strategist
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `pub publish`. This is preferred for private packages.
@@ -24,6 +24,8 @@ dependencies:
   flutter:
     sdk: flutter
 
+  url_launcher: ^5.4.0
+
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   # cupertino_icons: ^0.1.3
@@ -45,6 +47,7 @@ flutter:
 
   assets:
     - assets/lollipop_man.png
+    - assets/google_play_badge.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
