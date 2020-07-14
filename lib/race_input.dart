@@ -16,11 +16,14 @@ class RaceInput extends StatefulWidget {
 }
 
 class RaceInputState extends State<RaceInput> {
-  final _formKey = GlobalKey<FormState>();
   Race _race = Race(
-      carsList[0], tracksList[0], 1, 3600, true, 0, 3.0, tracksList[0].lapTime);
+      carsList[0], tracksList[0], 1, 3600, true, 0, 3.0, tracksList[0].lapTimeGT3);
 
-  final margin = 8.0;
+  final margin = 4.0;
+
+  int _classIndex = 0;
+
+  List<Car> _cars = List();
 
   int _durationHours;
   int _durationMinutes;
@@ -35,7 +38,9 @@ class RaceInputState extends State<RaceInput> {
   int _fuelUsageLiters = 1;
   int _fuelUsageCentiliters = 0;
 
-  List<DropdownMenuItem<Car>> _carsDropDownMenuItems;
+  List<DropdownMenuItem<int>> _classDropDownMenuItems;
+  List<DropdownMenuItem<Car>> _gt3CarsDropDownMenuItems;
+  List<DropdownMenuItem<Car>> _gt4CarsDropDownMenuItems;
   List<DropdownMenuItem<Track>> _tracksDropDownMenuItems;
   List<DropdownMenuItem<int>> _formationLapDropDownMenuItems;
   List<DropdownMenuItem<int>> _durationHoursDropDownMenuItems;
@@ -51,7 +56,14 @@ class RaceInputState extends State<RaceInput> {
 
   @override
   void initState() {
-    _carsDropDownMenuItems = getCarsDropDownMenuItems();
+    _cars.add(getFirstCar('GT3'));
+    _cars.add(getFirstCar('GT4'));
+    _cars.add(getFirstCar('CUP'));
+    _cars.add(getFirstCar('ST'));
+
+    _classDropDownMenuItems = getClassDropDownMenuItems();
+    _gt3CarsDropDownMenuItems = getCarsDropDownMenuItems('GT3');
+    _gt4CarsDropDownMenuItems = getCarsDropDownMenuItems('GT4');
     _tracksDropDownMenuItems = getTracksDropDownMenuItems();
     _formationLapDropDownMenuItems = getFormationLapDropDownMenuItems();
     _durationHoursDropDownMenuItems = getIntDropDownMenuItems(0, 24, 1, 0);
@@ -75,11 +87,15 @@ class RaceInputState extends State<RaceInput> {
   void _loadSettings() async {
     final settings = await SharedPreferences.getInstance();
 
-    final carName = settings.getString('carName') ?? '';
+    _classIndex = settings.getInt('classIndex') ?? 0;
+
+    _cars[0] = getCar('GT3', settings.getString(getCarSettingsKey('GT3')) ?? '');
+    _cars[1] = getCar('GT4', settings.getString(getCarSettingsKey('GT4')) ?? '');
+
     final trackName = settings.getString('trackName') ?? '';
 
     setState(() {
-      _race.car = getCar(carName);
+      _race.car = _cars[_classIndex];
       _race.track = getTrack(trackName);
       _race.formationLap = settings.getInt('formationLap') ?? 1;
       _race.raceDuration = settings.getInt('raceDuration') ?? 3600;
@@ -103,7 +119,9 @@ class RaceInputState extends State<RaceInput> {
 
   void _saveSettings() async {
     final settings = await SharedPreferences.getInstance();
-    settings.setString('carName', _race.car.ksName);
+    settings.setInt('classIndex', _classIndex);
+    settings.setString(getCarSettingsKey('GT3'), _cars[0].ksName);
+    settings.setString(getCarSettingsKey('GT4'), _cars[1].ksName);
     settings.setString('trackName', _race.track.ksName);
     settings.setInt('formationLap', _race.formationLap);
     settings.setInt('raceDuration', _race.raceDuration);
@@ -118,8 +136,8 @@ class RaceInputState extends State<RaceInput> {
     final settings = await SharedPreferences.getInstance();
     setState(() {
       _race.lapTime = settings.getDouble(
-        getLapTimeSettingsKey(_race.track, _race.car)) ??
-          _race.track.lapTime;
+        getLapTimeSettingsKey(_race.track, _cars[_classIndex])) ??
+          _race.track.getLapTime(_cars[_classIndex].className);
 
       _lapTimeMinutes = (_race.lapTime / 60).floor();
       _lapTimeSeconds = (_race.lapTime - _lapTimeMinutes * 60).floor();
@@ -130,7 +148,7 @@ class RaceInputState extends State<RaceInput> {
   void _saveLapTime() async {
     final settings = await SharedPreferences.getInstance();
     settings.setDouble(
-        getLapTimeSettingsKey(_race.track, _race.car),
+        getLapTimeSettingsKey(_race.track, _cars[_classIndex]),
         _race.lapTime);
   }
 
@@ -148,8 +166,8 @@ class RaceInputState extends State<RaceInput> {
     final settings = await SharedPreferences.getInstance();
     setState(() {
       _race.fuelUsage = settings.getDouble(
-          getFuelUsageSettingsKey(_race.track, _race.car))??
-          getFuelUsageDefault(_race.car, _race.track);
+          getFuelUsageSettingsKey(_race.track, _cars[_classIndex]))??
+          getFuelUsageDefault(_cars[_classIndex], _race.track);
       _fuelUsageLiters = _race.fuelUsage.floor();
       _fuelUsageCentiliters = (_race.fuelUsage * 100).floor() % 100;
     });
@@ -158,7 +176,7 @@ class RaceInputState extends State<RaceInput> {
   void _saveFuelUsage() async {
     final settings = await SharedPreferences.getInstance();
     settings.setDouble(
-        getFuelUsageSettingsKey(_race.track, _race.car),
+        getFuelUsageSettingsKey(_race.track, _cars[_classIndex]),
         _race.fuelUsage);
   }
 
@@ -178,10 +196,11 @@ class RaceInputState extends State<RaceInput> {
       child: Container(
         padding: const EdgeInsets.all(16),
         child: Form(
-          key: _formKey,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
+              classRow(),
+              SizedBox(height: margin),
               carRow(),
               SizedBox(height: margin),
               trackRow(),
@@ -202,7 +221,7 @@ class RaceInputState extends State<RaceInput> {
               SizedBox(height: margin),
               RaisedButton(
                 onPressed: () {
-                  if (_formKey.currentState.validate()) {
+                    _race.car = _cars[_classIndex];
                     _race.computeStrategies();
                     FocusScope.of(context).unfocus();
 
@@ -222,7 +241,6 @@ class RaceInputState extends State<RaceInput> {
                       );
                     }
                     _saveSettings();
-                  }
                 },
                 child: Text('Go!'),
               ),
@@ -233,23 +251,67 @@ class RaceInputState extends State<RaceInput> {
     );
   }
 
-  List<DropdownMenuItem<Car>> getCarsDropDownMenuItems() {
+  List<DropdownMenuItem<int>> getClassDropDownMenuItems() {
+    return [
+      DropdownMenuItem(value: 0, child: Text('GT3')),
+      DropdownMenuItem(value: 1, child: Text('GT4')),
+      DropdownMenuItem(value: 2, child: Text('CUP')),
+      DropdownMenuItem(value: 3, child: Text('ST')),
+    ];
+  }
+
+  List<DropdownMenuItem<Car>> getCarsDropDownMenuItems(String className) {
     List<DropdownMenuItem<Car>> items = List();
     for (Car car in carsList) {
-      items.add(DropdownMenuItem(value: car, child: Text(car.displayName)));
+      if (car.className == className)
+        items.add(DropdownMenuItem(value: car, child: Text(car.displayName)));
     }
     return items;
+  }
+
+  Widget classRow() {
+    return buildRowTextAndWidget(
+      "Class:",
+      DropdownButton(
+        value: _classIndex,
+        items: _classDropDownMenuItems,
+        onChanged: (int classIndex) {
+          setState(() {
+            _classIndex = classIndex;
+            _loadLapTime();
+            _loadFuelUsage();
+          });
+        },
+        isExpanded: true,
+      ),
+    );
   }
 
   Widget carRow() {
     return buildRowTextAndWidget(
       "Car:",
-      DropdownButton(
-        value: _race.car,
-        items: _carsDropDownMenuItems,
-        onChanged: carChanged,
-        isExpanded: true,
-      ),
+      Container(
+        child: IndexedStack(
+          index: _classIndex,
+          alignment: Alignment.centerLeft,
+          children: [
+            DropdownButton(
+              value: _cars[0],
+              items: _gt3CarsDropDownMenuItems,
+              onChanged: carChanged,
+              isExpanded: true,
+            ),
+            DropdownButton(
+              value: _cars[1],
+              items: _gt4CarsDropDownMenuItems,
+              onChanged: carChanged,
+              isExpanded: true,
+            ),
+            Text(_cars[2].displayName),
+            Text(_cars[3].displayName),
+          ],
+        ),
+      )
     );
   }
 
@@ -491,7 +553,7 @@ class RaceInputState extends State<RaceInput> {
 
   void carChanged(Car newCar) async {
     setState(() {
-      _race.car = newCar;
+      _cars[_classIndex] = newCar;
     });
     _loadLapTime();
     _loadFuelUsage();

@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import './cars.dart';
 import './tracks.dart';
 
+String getCarSettingsKey(String className) {
+  return 'carName-' + className;
+}
+
 String getFuelUsageSettingsKey(Track track, Car car) {
   return 'fuelUsage-' + track.ksName + '-' + car.ksName;
 }
