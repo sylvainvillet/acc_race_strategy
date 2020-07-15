@@ -252,8 +252,8 @@ class _HomePageState extends State<HomePage> {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Text('- Reworked strategy display'),
-            Text('- Added race time left for each pit stop'),
+            Text('- Added GT4 class'),
+            Text('- Separated GT3, GT4. CUP and ST classes'),
           ],
         ));
   }
