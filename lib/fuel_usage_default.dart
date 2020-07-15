@@ -15,7 +15,7 @@ double getFuelUsageDefault(Car car, Track track)
     if ((fuelUsageItem.carKsName == car.ksName) && (fuelUsageItem.trackKsName == track.ksName))
       return fuelUsageItem.fuelUsage;
 
-  return 3.5;
+  return 1.0;
 }
 
 const List<FuelUsageType> fuelUsageDefaultList = [

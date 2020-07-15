@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import './cars.dart';
 import './tracks.dart';
 
+String getCarSettingsKey(String className) {
+  return 'carName-' + className;
+}
+
 String getFuelUsageSettingsKey(Track track, Car car) {
   return 'fuelUsage-' + track.ksName + '-' + car.ksName;
 }
@@ -15,26 +19,18 @@ String getLapTimeString(double lapTime) {
   int seconds = (lapTime - minutes * 60).floor();
   int milliseconds = ((lapTime - lapTime.floor()) * 1000).floor();
 
-  String returnValue = minutes.toString() + ':';
-
-  if (seconds < 10) returnValue += '0';
-  returnValue += seconds.toString() + '.';
-
-  if (milliseconds < 100) returnValue += '0';
-  if (milliseconds < 10) returnValue += '0';
-  returnValue += milliseconds.toString();
-
-  return returnValue;
+  return minutes.toString() +
+      ':' +
+      seconds.toString().padLeft(2, '0') +
+      '.' +
+      milliseconds.toString().padLeft(3, '0');
 }
 
 String getHMMDurationString(int seconds) {
   int hours = (seconds / 3600).floor();
   int minutes = (seconds / 60 - hours * 60).floor();
-  String returnValue = hours.toString() + 'h';
-  if (minutes < 10) returnValue += '0';
-  returnValue += minutes.toString();
 
-  return returnValue;
+  return hours.toString() + 'h' + minutes.toString().padLeft(2, '0');
 }
 
 Widget buildRowTitle(String text) {
@@ -101,16 +97,13 @@ List<DropdownMenuItem<int>> getIntDropDownMenuItems(
   List<DropdownMenuItem<int>> items = List();
   String value;
   for (int i = min; i <= max; i += increment) {
-    value = '';
-    if (padding == 2 && i < 100) value += '0';
-    if (padding >= 1 && i < 10) value += '0';
-    value += i.toString();
-    items.add(DropdownMenuItem(value: i, child: Text(value)));
+    items.add(DropdownMenuItem(value: i, child: Text(i.toString().padLeft(padding, '0'))));
   }
   return items;
 }
 
-Future<void> showSimplePopup(BuildContext context, String title, Widget content, {String button = 'Ok'}) async {
+Future<void> showSimplePopup(BuildContext context, String title, Widget content,
+    {String button = 'Ok'}) async {
   return showDialog<void>(
     context: context,
     barrierDismissible: true,

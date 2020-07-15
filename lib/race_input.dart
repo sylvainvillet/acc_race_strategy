@@ -16,11 +16,14 @@ class RaceInput extends StatefulWidget {
 }
 
 class RaceInputState extends State<RaceInput> {
-  final _formKey = GlobalKey<FormState>();
   Race _race = Race(
-      carsList[0], tracksList[0], 1, 3600, true, 0, 3.0, tracksList[0].lapTime);
+      carsList[0], tracksList[0], 1, 3600, true, 0, 3.0, tracksList[0].lapTimeGT3);
 
-  final margin = 8.0;
+  final margin = 4.0;
+
+  int _classIndex = 0;
+
+  List<Car> _cars = List();
 
   int _durationHours;
   int _durationMinutes;
@@ -35,7 +38,9 @@ class RaceInputState extends State<RaceInput> {
   int _fuelUsageLiters = 1;
   int _fuelUsageCentiliters = 0;
 
-  List<DropdownMenuItem<Car>> _carsDropDownMenuItems;
+  List<DropdownMenuItem<int>> _classDropDownMenuItems;
+  List<DropdownMenuItem<Car>> _gt3CarsDropDownMenuItems;
+  List<DropdownMenuItem<Car>> _gt4CarsDropDownMenuItems;
   List<DropdownMenuItem<Track>> _tracksDropDownMenuItems;
   List<DropdownMenuItem<int>> _formationLapDropDownMenuItems;
   List<DropdownMenuItem<int>> _durationHoursDropDownMenuItems;
@@ -51,33 +56,36 @@ class RaceInputState extends State<RaceInput> {
 
   @override
   void initState() {
-    _carsDropDownMenuItems = getCarsDropDownMenuItems();
+    _cars.add(getFirstCar('GT3'));
+    _cars.add(getFirstCar('GT4'));
+    _cars.add(getFirstCar('CUP'));
+    _cars.add(getFirstCar('ST'));
+
+    _classDropDownMenuItems = getClassDropDownMenuItems();
+    _gt3CarsDropDownMenuItems = getCarsDropDownMenuItems('GT3');
+    _gt4CarsDropDownMenuItems = getCarsDropDownMenuItems('GT4');
     _tracksDropDownMenuItems = getTracksDropDownMenuItems();
     _formationLapDropDownMenuItems = getFormationLapDropDownMenuItems();
     _durationHoursDropDownMenuItems = getIntDropDownMenuItems(0, 24, 1, 0);
-    _durationMinutesDropDownMenuItems = getIntDropDownMenuItems(0, 55, 5, 1);
+    _durationMinutesDropDownMenuItems = getIntDropDownMenuItems(0, 55, 5, 2);
     _stintDurationHoursDropDownMenuItems = getIntDropDownMenuItems(0, 1, 1, 0);
-    _stintDurationMinutesDropDownMenuItems =
-        getIntDropDownMenuItems(0, 55, 5, 1);
+    _stintDurationMinutesDropDownMenuItems = getIntDropDownMenuItems(0, 55, 5, 2);
     _lapTimeMinutesDropDownMenuItems = getIntDropDownMenuItems(0, 2, 1, 0);
-    _lapTimeSecondsDropDownMenuItems = getIntDropDownMenuItems(0, 59, 1, 1);
+    _lapTimeSecondsDropDownMenuItems = getIntDropDownMenuItems(0, 59, 1, 2);
     _lapTimeMillisecondsDropDownMenuItems =
-        getIntDropDownMenuItems(0, 900, 100, 2);
+        getIntDropDownMenuItems(0, 900, 100, 3);
     _mandatoryPitStopsDropDownMenuItems = getIntDropDownMenuItems(0, 23, 1, 0);
     _fuelUsageLitersDropDownMenuItems = getIntDropDownMenuItems(0, 4, 1, 0);
     _fuelUsageCentilitersDropDownMenuItems =
-        getIntDropDownMenuItems(0, 99, 1, 1);
+        getIntDropDownMenuItems(0, 99, 1, 2);
 
-    _race.car = _carsDropDownMenuItems[0].value;
+    _race.car = carsList[0];
     _race.track = _tracksDropDownMenuItems[0].value;
     _race.formationLap = 1;
     _race.raceDuration = 3600;
     _race.maxStintDuration = 6900; // 1h55
     _race.refuelingAllowed = true;
     _race.mandatoryPitStops = 0;
-
-    _loadLapTime();
-    _loadFuelUsage();
 
     _durationHours = (_race.raceDuration / 3600).floor();
     _durationMinutes =
@@ -90,7 +98,7 @@ class RaceInputState extends State<RaceInput> {
   }
 
   void _loadLapTime() {
-    _race.lapTime = _race.track.lapTime;
+    _race.lapTime = _race.track.getLapTime(_cars[_classIndex].className);
 
     _lapTimeMinutes = (_race.lapTime / 60).floor();
     _lapTimeSeconds = (_race.lapTime - _lapTimeMinutes * 60).floor();
@@ -98,7 +106,7 @@ class RaceInputState extends State<RaceInput> {
   }
 
   void _loadFuelUsage() {
-    _race.fuelUsage = getFuelUsageDefault(_race.car, _race.track);
+    _race.fuelUsage = getFuelUsageDefault(_cars[_classIndex], _race.track);
     _fuelUsageLiters = _race.fuelUsage.floor();
     _fuelUsageCentiliters = (_race.fuelUsage * 100).floor() % 100;
   }
@@ -111,10 +119,11 @@ class RaceInputState extends State<RaceInput> {
       child: Container(
         padding: const EdgeInsets.all(16),
         child: Form(
-          key: _formKey,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
+              classRow(),
+              SizedBox(height: margin),
               carRow(),
               SizedBox(height: margin),
               trackRow(),
@@ -147,31 +156,22 @@ class RaceInputState extends State<RaceInput> {
                   ),
                   RaisedButton(
                     onPressed: () {
-                      if (_formKey.currentState.validate()) {
-                        _race.computeStrategies();
-                        FocusScope.of(context).unfocus();
+                      _race.car = _cars[_classIndex];
+                      _race.computeStrategies();
+                      FocusScope.of(context).unfocus();
 
-                        if (_race.raceDuration == 0 ||
-                            _race.strategies.length == 0 ||
-                            (_race.strategies[0].nbOfLaps <=
-                                _race.strategies[0].pitStops.length)) {
-                          _showErrorDialog();
-                        } else {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => Center(
-                                child: AspectRatio(
-                                  aspectRatio: platform.isMobile()
-                                      ? MediaQuery.of(context).size.width /
-                                      MediaQuery.of(context).size.height
-                                      : 0.6,
-                                  child: RaceDetails(race: _race),
-                                ),
-                              ),
+                      if (_race.raceDuration == 0 ||
+                          _race.strategies.length == 0 ||
+                          (_race.strategies[0].nbOfLaps <=
+                              _race.strategies[0].pitStops.length)) {
+                        _showErrorDialog();
+                      } else {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => RaceDetails(race: _race),
                             ),
-                          );
-                        }
+                        );
                       }
                     },
                     child: Text('Go!'),
@@ -185,23 +185,71 @@ class RaceInputState extends State<RaceInput> {
     );
   }
 
-  List<DropdownMenuItem<Car>> getCarsDropDownMenuItems() {
+  List<DropdownMenuItem<int>> getClassDropDownMenuItems() {
+    return [
+      DropdownMenuItem(value: 0, child: Text('GT3')),
+      DropdownMenuItem(value: 1, child: Text('GT4')),
+      DropdownMenuItem(value: 2, child: Text('CUP')),
+      DropdownMenuItem(value: 3, child: Text('ST')),
+    ];
+  }
+
+  List<DropdownMenuItem<Car>> getCarsDropDownMenuItems(String className) {
     List<DropdownMenuItem<Car>> items = List();
     for (Car car in carsList) {
-      items.add(DropdownMenuItem(value: car, child: Text(car.displayName)));
+      if (car.className == className)
+        items.add(DropdownMenuItem(value: car, child: Text(car.displayName)));
     }
     return items;
+  }
+
+  Widget classRow() {
+    return buildRowTextAndWidget(
+      "Class:",
+      DropdownButton(
+        value: _classIndex,
+        items: _classDropDownMenuItems,
+        onChanged: (int classIndex) {
+          setState(() {
+            _classIndex = classIndex;
+            _loadLapTime();
+            _loadFuelUsage();
+          });
+        },
+        isExpanded: true,
+      ),
+    );
   }
 
   Widget carRow() {
     return buildRowTextAndWidget(
       "Car:",
-      DropdownButton(
-        value: _race.car,
-        items: _carsDropDownMenuItems,
-        onChanged: carChanged,
-        isExpanded: true,
-      ),
+      Container(
+        child: IndexedStack(
+          index: _classIndex,
+          alignment: Alignment.centerLeft,
+          children: [
+            DropdownButton(
+              value: _cars[0],
+              items: _gt3CarsDropDownMenuItems,
+              onChanged: carChanged,
+              isExpanded: true,
+            ),
+            DropdownButton(
+              value: _cars[1],
+              items: _gt4CarsDropDownMenuItems,
+              onChanged: carChanged,
+              isExpanded: true,
+            ),
+            Text(_cars[2].displayName, style: Theme.of(context)
+                .textTheme
+                .subtitle1),
+            Text(_cars[3].displayName, style: Theme.of(context)
+                .textTheme
+                .subtitle1),
+          ],
+        ),
+      )
     );
   }
 
@@ -443,7 +491,7 @@ class RaceInputState extends State<RaceInput> {
 
   void carChanged(Car newCar) async {
     setState(() {
-      _race.car = newCar;
+      _cars[_classIndex] = newCar;
     });
     _loadLapTime();
     _loadFuelUsage();
