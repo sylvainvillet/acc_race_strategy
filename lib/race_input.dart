@@ -67,17 +67,17 @@ class RaceInputState extends State<RaceInput> {
     _tracksDropDownMenuItems = getTracksDropDownMenuItems();
     _formationLapDropDownMenuItems = getFormationLapDropDownMenuItems();
     _durationHoursDropDownMenuItems = getIntDropDownMenuItems(0, 24, 1, 0);
-    _durationMinutesDropDownMenuItems = getIntDropDownMenuItems(0, 55, 5, 1);
+    _durationMinutesDropDownMenuItems = getIntDropDownMenuItems(0, 55, 5, 2);
     _stintDurationHoursDropDownMenuItems = getIntDropDownMenuItems(0, 1, 1, 0);
-    _stintDurationMinutesDropDownMenuItems = getIntDropDownMenuItems(0, 55, 5, 1);
+    _stintDurationMinutesDropDownMenuItems = getIntDropDownMenuItems(0, 55, 5, 2);
     _lapTimeMinutesDropDownMenuItems = getIntDropDownMenuItems(0, 2, 1, 0);
-    _lapTimeSecondsDropDownMenuItems = getIntDropDownMenuItems(0, 59, 1, 1);
+    _lapTimeSecondsDropDownMenuItems = getIntDropDownMenuItems(0, 59, 1, 2);
     _lapTimeMillisecondsDropDownMenuItems =
-        getIntDropDownMenuItems(0, 900, 100, 2);
+        getIntDropDownMenuItems(0, 900, 100, 3);
     _mandatoryPitStopsDropDownMenuItems = getIntDropDownMenuItems(0, 23, 1, 0);
     _fuelUsageLitersDropDownMenuItems = getIntDropDownMenuItems(0, 4, 1, 0);
     _fuelUsageCentilitersDropDownMenuItems =
-        getIntDropDownMenuItems(0, 99, 1, 1);
+        getIntDropDownMenuItems(0, 99, 1, 2);
 
     _loadSettings();
 
@@ -307,8 +307,12 @@ class RaceInputState extends State<RaceInput> {
               onChanged: carChanged,
               isExpanded: true,
             ),
-            Text(_cars[2].displayName),
-            Text(_cars[3].displayName),
+            Text(_cars[2].displayName, style: Theme.of(context)
+                .textTheme
+                .subtitle1),
+            Text(_cars[3].displayName, style: Theme.of(context)
+                .textTheme
+                .subtitle1),
           ],
         ),
       )

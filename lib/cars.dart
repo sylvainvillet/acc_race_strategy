@@ -15,6 +15,7 @@ Car getFirstCar(String className)
 
   return carsList[0];
 }
+
 Car getCar(String className, String ksName)
 {
   Car returnValue = getFirstCar(className);
