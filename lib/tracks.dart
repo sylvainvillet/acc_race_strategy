@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 class Track {
   const Track(this.ksName, this.displayName, this.length, this.lapTimeGT3,
       this.lapTimeGT4, this.lapTimeCUP, this.lapTimeST, this.timeLostInPits);

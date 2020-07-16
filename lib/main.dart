@@ -228,6 +228,7 @@ class _HomePageState extends State<HomePage> {
         context,
         'About',
         Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             Image(
               image: AssetImage('assets/lollipop_man.png'),
@@ -240,12 +241,13 @@ class _HomePageState extends State<HomePage> {
             SizedBox(height: margin),
             Text('Developed by Sylvain Villet'),
             SizedBox(height: margin),
-            Text('Special thanks to ElderCold and Judemuppet'),
+            Text('Special thanks to ElderCold and Judemuppet', textAlign: TextAlign.center,),
           ],
         ));
   }
 
   void _showChangelogPopup(BuildContext context) async {
+    double margin = 10.0;
     showSimplePopup(
         context,
         'Changelog v' + version,
@@ -253,9 +255,9 @@ class _HomePageState extends State<HomePage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Text('- Added GT4 class with default lap times and fuel usage data'),
-            SizedBox(height: 4.0,),
+            SizedBox(height: margin),
             Text('- Separated GT3, GT4. CUP and ST classes'),
-            SizedBox(height: 4.0,),
+            SizedBox(height: margin),
             Text('- Added default lap times for CUP and ST classes'),
           ],
         ));

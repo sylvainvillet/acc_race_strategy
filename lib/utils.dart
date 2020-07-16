@@ -95,7 +95,7 @@ Widget buildRowTextAndWidget(String text, Widget inputWidget,
 List<DropdownMenuItem<int>> getIntDropDownMenuItems(
     int min, int max, int increment, int padding) {
   List<DropdownMenuItem<int>> items = List();
-  String value;
+
   for (int i = min; i <= max; i += increment) {
     items.add(DropdownMenuItem(value: i, child: Text(i.toString().padLeft(padding, '0'))));
   }
