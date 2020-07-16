@@ -240,7 +240,7 @@ class _HomePageState extends State<HomePage> {
             SizedBox(height: margin),
             Text('Developed by Sylvain Villet'),
             SizedBox(height: margin),
-            Text('Special thanks to ElderCold'),
+            Text('Special thanks to ElderCold and Judemuppet'),
           ],
         ));
   }
@@ -252,8 +252,11 @@ class _HomePageState extends State<HomePage> {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Text('- Added GT4 class'),
+            Text('- Added GT4 class with default lap times and fuel usage data'),
+            SizedBox(height: 4.0,),
             Text('- Separated GT3, GT4. CUP and ST classes'),
+            SizedBox(height: 4.0,),
+            Text('- Added default lap times for CUP and ST classes'),
           ],
         ));
   }
