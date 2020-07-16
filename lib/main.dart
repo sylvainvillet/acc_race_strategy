@@ -79,6 +79,7 @@ class _HomePageState extends State<HomePage> {
         context,
         'About',
         Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             Image(
               image: AssetImage('assets/lollipop_man.png'),
@@ -88,7 +89,7 @@ class _HomePageState extends State<HomePage> {
             SizedBox(height: margin),
             Text('Developed by Sylvain Villet'),
             SizedBox(height: margin),
-            Text('Special thanks to ElderCold'),
+            Text('Special thanks to ElderCold and Judemuppet', textAlign: TextAlign.center,),
           ],
         ));
   }
