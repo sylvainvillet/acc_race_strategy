@@ -256,7 +256,7 @@ class _HomePageState extends State<HomePage> {
           children: <Widget>[
             Text('- Added GT4 class with default lap times and fuel usage data'),
             SizedBox(height: margin),
-            Text('- Separated GT3, GT4. CUP and ST classes'),
+            Text('- Separated GT3, GT4, CUP and ST classes'),
             SizedBox(height: margin),
             Text('- Added default lap times for CUP and ST classes'),
           ],
