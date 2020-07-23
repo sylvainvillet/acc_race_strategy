@@ -56,12 +56,10 @@ class Race {
     if (refuelingAllowed && (nbOfLaps > nbOfLapsWithFullTank)) {
       while ((nbOfLaps / (nbOfPitStops + 1)).ceil() > nbOfLapsWithFullTank) {
         nbOfPitStops++;
+        nbOfLaps = _getNbOfLaps(raceDuration, formationLap, nbOfPitStops,
+            track.timeLostInPits, lapTime);
       }
     }
-
-    // Adjust number of laps
-    nbOfLaps = _getNbOfLaps(raceDuration, formationLap, nbOfPitStops,
-        track.timeLostInPits, lapTime);
 
     realRaceDuration = ((nbOfLaps - formationLap) * lapTime +
             (nbOfPitStops * track.timeLostInPits))
