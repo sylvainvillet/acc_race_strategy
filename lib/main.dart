@@ -31,7 +31,9 @@ class AccStrategistApp extends StatelessWidget {
           data: ThemeData(
             primarySwatch: Colors.red,
             toggleableActiveColor: Colors.red,
-            tabBarTheme: TabBarTheme(indicator: UnderlineTabIndicator (borderSide: BorderSide(width: 2.0, color: Colors.red))),
+            tabBarTheme: TabBarTheme(
+                indicator: UnderlineTabIndicator(
+                    borderSide: BorderSide(width: 2.0, color: Colors.red))),
             brightness: Brightness.dark,
             visualDensity: VisualDensity.adaptivePlatformDensity,
           ),
@@ -241,7 +243,10 @@ class _HomePageState extends State<HomePage> {
             SizedBox(height: margin),
             Text('Developed by Sylvain Villet'),
             SizedBox(height: margin),
-            Text('Special thanks to ElderCold and Judemuppet', textAlign: TextAlign.center,),
+            Text(
+              'Special thanks to ElderCold and Judemuppet',
+              textAlign: TextAlign.center,
+            ),
           ],
         ));
   }
@@ -249,17 +254,18 @@ class _HomePageState extends State<HomePage> {
   void _showChangelogPopup(BuildContext context) async {
     double margin = 10.0;
     showSimplePopup(
-        context,
-        'Changelog v' + version,
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Text('- Added GT4 class with default lap times and fuel usage data'),
-            SizedBox(height: margin),
-            Text('- Separated GT3, GT4, CUP and ST classes'),
-            SizedBox(height: margin),
-            Text('- Added default lap times for CUP and ST classes'),
-          ],
-        ));
+      context,
+      'Changelog v' + version,
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text('- Added real race duration to Strategy screen'),
+          SizedBox(height: margin),
+          Text('- Added average lap time to Strategy screen'),
+          SizedBox(height: margin),
+          Text('- Click on stints to open a lap-by-lap breakdown'),
+        ],
+      ),
+    );
   }
 }

@@ -33,6 +33,14 @@ String getHMMDurationString(int seconds) {
   return hours.toString() + 'h' + minutes.toString().padLeft(2, '0');
 }
 
+String getHMMSSDurationString(int seconds) {
+  int hours = (seconds / 3600).floor();
+  int minutes = (seconds / 60 - hours * 60).floor();
+  seconds = seconds % 60;
+
+  return hours.toString() + ':' + minutes.toString().padLeft(2, '0') + ':' + seconds.toString().padLeft(2, '0');
+}
+
 Widget buildRowTitle(String text) {
   return Row(
     children: <Widget>[

@@ -19,6 +19,7 @@ class Race {
   Track track;
   int formationLap;
   int raceDuration;
+  int realRaceDuration;
   int maxStintDuration;
   bool refuelingAllowed;
   int mandatoryPitStops;
@@ -62,6 +63,10 @@ class Race {
     nbOfLaps = _getNbOfLaps(raceDuration, formationLap, nbOfPitStops,
         track.timeLostInPits, lapTime);
 
+    realRaceDuration = ((nbOfLaps - formationLap) * lapTime +
+            (nbOfPitStops * track.timeLostInPits))
+        .ceil();
+
     // Allow up to 20% fuel saving
     for (int i = minimumPitStops; i <= nbOfPitStops; i++) {
       if (refuelingAllowed) {
@@ -86,6 +91,9 @@ class Race {
     strategy.pitStops = List<PitStop>();
     strategy.stints = List<Stint>();
     strategy.nbOfLaps = nbOfLaps;
+    strategy.realLapTime =
+        (realRaceDuration - nbOfPitStops * track.timeLostInPits) /
+            (nbOfLaps - formationLap);
 
     if (nbOfPitStops == 0) {
       strategy.startingFuel = (nbOfLaps * fuelUsage).ceil();
@@ -114,6 +122,7 @@ class Race {
         PitStop pitStop = new PitStop();
         pitStop.fuelToAdd = 0;
         pitStop.pitStopLap = lap - formationLap;
+        pitStop.raceTimeLeft = getRaceTimeLeft(pitStop.pitStopLap, i, strategy.realLapTime);
         strategy.pitStops.add(pitStop);
         strategy.stints
             .add(Stint(nbOfLapsPerStint, realFuelUsage * nbOfLapsPerStint));
@@ -143,11 +152,7 @@ class Race {
         PitStop pitStop = new PitStop();
         pitStop.fuelToAdd = fuelNeeded;
         pitStop.pitStopLap = lap - formationLap;
-        pitStop.raceTimeLeft = (((nbOfLaps - formationLap) * lapTime +
-                    nbOfPitStops * track.timeLostInPits) *
-                (nbOfLaps - lap) /
-                (nbOfLaps - formationLap))
-            .ceil();
+        pitStop.raceTimeLeft = getRaceTimeLeft(pitStop.pitStopLap, i, strategy.realLapTime);
         strategy.pitStops.add(pitStop);
         strategy.stints.add(Stint(nbOfLapsPerStint, fuelNeeded.toDouble()));
       }
@@ -167,6 +172,14 @@ class Race {
         (nbOfLaps - formationLap);
   }
 
+  int getRaceTimeLeft(int nbOfLapsDone, int nbOfPitStopsDone, double realLapTime)
+  {
+    double timeLeft = raceDuration - nbOfLapsDone * realLapTime - nbOfPitStopsDone * track.timeLostInPits;
+    if (timeLeft < 0) timeLeft = 0.0;
+
+    return timeLeft.ceil();
+  }
+
   int _getNbOfLaps(int raceDuration, int formationLap, int nbOfPitStops,
       int timeLostPerPitStop, double lapTime) {
     return ((raceDuration - nbOfPitStops * timeLostPerPitStop) / lapTime +
@@ -178,6 +191,7 @@ class Race {
 class Strategy {
   int nbOfLaps = 0;
   int startingFuel = 0;
+  double realLapTime = 0;
   double fuelSaving = 0;
   double cutOffLow = 0.0;
   double cutOffHigh = 0.0;
