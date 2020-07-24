@@ -89,7 +89,10 @@ class _HomePageState extends State<HomePage> {
             SizedBox(height: margin),
             Text('Developed by Sylvain Villet'),
             SizedBox(height: margin),
-            Text('Special thanks to ElderCold and Judemuppet', textAlign: TextAlign.center,),
+            Text(
+              'Special thanks to ElderCold, Judemuppet and Petrol',
+              textAlign: TextAlign.center,
+            ),
           ],
         ));
   }
