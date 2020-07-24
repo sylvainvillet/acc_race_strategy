@@ -1,6 +1,7 @@
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:theme_provider/theme_provider.dart';
+import './mod/my_open_container.dart';
 import './race.dart';
 import './stint_details.dart';
 import './utils.dart';
@@ -157,7 +158,7 @@ class RaceDetails extends StatelessWidget {
 
   Widget stintWidget(
       BuildContext context, Strategy strategy, int index, Stint stint) {
-    return OpenContainer(
+    return MyOpenContainer(
       closedElevation: 5.0,
       closedShape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.all(Radius.circular(4.0)),

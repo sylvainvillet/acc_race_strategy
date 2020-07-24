@@ -264,6 +264,8 @@ class _HomePageState extends State<HomePage> {
           Text('- Added average lap time to Strategy screen'),
           SizedBox(height: margin),
           Text('- Click on stints to open a lap-by-lap breakdown'),
+          SizedBox(height: margin),
+          Text('- Improved strategies computations'),
         ],
       ),
     );
