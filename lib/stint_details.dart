@@ -34,6 +34,7 @@ class StintDetails extends StatelessWidget {
             itemBuilder: (_, int index) {
               String lapString;
               int timeLeft;
+              int lapNumber = 0;
 
               if (index % 2 == 1) return Divider();
 
@@ -44,13 +45,13 @@ class StintDetails extends StatelessWidget {
                   lapString = "Formation lap";
                   timeLeft = race.raceDuration;
                 } else {
-                  int lapNumber = index + 1 - race.formationLap;
+                  lapNumber = index + 1 - race.formationLap;
                   timeLeft = race.getRaceTimeLeft(
                       lapNumber, stintIndex, strategy.realLapTime);
                   lapString = 'Lap ' + (lapNumber).toString();
                 }
               } else {
-                int lapNumber =
+                lapNumber =
                     index + 1 + strategy.pitStops[stintIndex - 1].pitStopLap;
                 lapString = 'Lap ' + lapNumber.toString();
                 timeLeft = race.getRaceTimeLeft(
@@ -59,13 +60,19 @@ class StintDetails extends StatelessWidget {
 
               if (timeLeft < 0) timeLeft = 0;
 
+              double fuelLeft;
+              if (race.refuelingAllowed) {
+                fuelLeft = stint.fuel - fuelPerLap * (index + 1);
+              } else {
+                fuelLeft = strategy.startingFuel -
+                    fuelPerLap * (lapNumber + race.formationLap);
+              }
+
               return ListTile(
                 title: Text(lapString),
                 subtitle:
                     Text(getHMMSSDurationString(timeLeft.ceil()) + ' left'),
-                trailing: Text(
-                    (stint.fuel - fuelPerLap * (index + 1)).toStringAsFixed(1) +
-                        ' L'),
+                trailing: Text((fuelLeft).toStringAsFixed(1) + ' L'),
               );
             },
           ),
