@@ -29,6 +29,7 @@ class StintDetails extends StatelessWidget {
       body: PageView(
         children: [
           ListView.builder(
+            padding: const EdgeInsets.symmetric(vertical: 8.0,),
             reverse: false,
             itemCount: stint.nbOfLaps * 2 - 1,
             itemBuilder: (_, int index) {
@@ -68,11 +69,26 @@ class StintDetails extends StatelessWidget {
                     fuelPerLap * (lapNumber + race.formationLap);
               }
 
-              return ListTile(
-                title: Text(lapString),
-                subtitle:
-                    Text(getHMMSSDurationString(timeLeft.ceil()) + ' left'),
-                trailing: Text((fuelLeft).toStringAsFixed(1) + ' L'),
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0,),
+                child: Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: Align(
+                          alignment: Alignment.centerLeft, child: Text(lapString)),
+                    ),
+                    Expanded(
+                      child: Center(
+                          child: Text(
+                              getHMMSSDurationString(timeLeft.ceil()) + ' left')),
+                    ),
+                    Expanded(
+                      child: Align(
+                          alignment: Alignment.centerRight,
+                          child: Text((fuelLeft).toStringAsFixed(1) + ' L')),
+                    ),
+                  ],
+                ),
               );
             },
           ),
