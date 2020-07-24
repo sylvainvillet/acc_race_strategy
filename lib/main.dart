@@ -244,7 +244,7 @@ class _HomePageState extends State<HomePage> {
             Text('Developed by Sylvain Villet'),
             SizedBox(height: margin),
             Text(
-              'Special thanks to ElderCold and Judemuppet',
+              'Special thanks to ElderCold, Judemuppet and Petrol',
               textAlign: TextAlign.center,
             ),
           ],
@@ -259,13 +259,15 @@ class _HomePageState extends State<HomePage> {
       Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
+          Text('- Added stint details page with lap-by-lap breakdown (click on stint to open)'),
+          SizedBox(height: margin),
           Text('- Added real race duration to Strategy screen'),
           SizedBox(height: margin),
           Text('- Added average lap time to Strategy screen'),
           SizedBox(height: margin),
-          Text('- Click on stints to open a lap-by-lap breakdown'),
+          Text('- Improved strategies computations in some corner cases'),
           SizedBox(height: margin),
-          Text('- Improved strategies computations'),
+          Text('- Updated some GT4 fuel usage values'),
         ],
       ),
     );
