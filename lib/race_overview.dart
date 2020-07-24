@@ -1,10 +1,10 @@
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
-import 'package:theme_provider/theme_provider.dart';
 import './mod/my_open_container.dart';
 import './race.dart';
 import './stint_details.dart';
 import './utils.dart';
+import './platform.dart';
 
 class RaceDetails extends StatelessWidget {
   final Race race;
@@ -72,11 +72,11 @@ class RaceDetails extends StatelessWidget {
                     buildRow2Texts(
                         "Pit stops:", strategy.pitStops.length.toString()),
                     SizedBox(height: margin),
-                    buildRow2Texts(
-                        "Race duration:", getHMMSSDurationString(race.realRaceDuration)),
+                    buildRow2Texts("Race duration:",
+                        getHMMSSDurationString(race.realRaceDuration)),
                     SizedBox(height: margin),
-                    buildRow2Texts(
-                        "Average lap time:", getLapTimeString(strategy.realLapTime)),
+                    buildRow2Texts("Average lap time:",
+                        getLapTimeString(strategy.realLapTime)),
                     SizedBox(height: margin),
                     buildRow2Texts(
                         "Lower cut-off:", getLapTimeString(strategy.cutOffLow)),
@@ -123,7 +123,9 @@ class RaceDetails extends StatelessWidget {
 
   Widget stintsAndPits(BuildContext context, Strategy strategy) {
     List<Widget> cards = [
-      SizedBox(height: 4.0,),
+      SizedBox(
+        height: 4.0,
+      ),
       Card(
         margin: const EdgeInsets.only(),
         elevation: 5,
@@ -138,7 +140,9 @@ class RaceDetails extends StatelessWidget {
     int rows = strategy.stints.length + strategy.pitStops.length;
 
     for (int i = 0; i < rows; i++) {
-      cards.add(SizedBox(height: 4.0,));
+      cards.add(SizedBox(
+        height: 4.0,
+      ));
 
       if (i % 2 == 0) {
         int stintIndex = (i / 2).floor();
@@ -158,33 +162,40 @@ class RaceDetails extends StatelessWidget {
 
   Widget stintWidget(
       BuildContext context, Strategy strategy, int index, Stint stint) {
-    return MyOpenContainer(
-      closedElevation: 5.0,
-      closedShape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.all(Radius.circular(4.0)),
+    return Card(
+      margin: const EdgeInsets.only(),
+      elevation: 5,
+      child: ListTile(
+        leading: Icon(Icons.directions_car),
+        title: Text('Stint ' + (index + 1).toString()),
+        subtitle: Text(((race.formationLap == 1 && index == 0)
+                ? 'Formation lap + ' + (stint.nbOfLaps - 1).toString()
+                : stint.nbOfLaps.toString()) +
+            " laps"),
+        trailing:
+            Text((stint.fuel / stint.nbOfLaps).toStringAsFixed(2) + ' L/lap'),
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => Center(
+                child: AspectRatio(
+                  aspectRatio: Platform().isMobile()
+                      ? MediaQuery.of(context).size.width /
+                          MediaQuery.of(context).size.height
+                      : 0.6,
+                  child: StintDetails(
+                    race: race,
+                    strategy: strategy,
+                    stint: stint,
+                    stintIndex: index,
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
       ),
-      closedBuilder: (BuildContext _, VoidCallback openContainer) {
-        return ListTile(
-          leading: Icon(Icons.directions_car),
-          title: Text('Stint ' + (index + 1).toString()),
-          subtitle: Text(((race.formationLap == 1 && index == 0)
-                  ? 'Formation lap + ' + (stint.nbOfLaps - 1).toString()
-                  : stint.nbOfLaps.toString()) +
-              " laps"),
-          trailing: Text(
-              (stint.fuel / stint.nbOfLaps).toStringAsFixed(2) + ' L/lap'),
-        );
-      },
-      openBuilder: (BuildContext _, VoidCallback openContainer) {
-        return ThemeConsumer(
-          child: StintDetails(
-            race: race,
-            strategy: strategy,
-            stint: stint,
-            stintIndex: index,
-          ),
-        );
-      },
     );
   }
 

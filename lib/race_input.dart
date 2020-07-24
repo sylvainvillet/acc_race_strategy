@@ -16,8 +16,8 @@ class RaceInput extends StatefulWidget {
 }
 
 class RaceInputState extends State<RaceInput> {
-  Race _race = Race(
-      carsList[0], tracksList[0], 1, 3600, true, 0, 3.0, tracksList[0].lapTimeGT3);
+  Race _race = Race(carsList[0], tracksList[0], 1, 3600, true, 0, 3.0,
+      tracksList[0].lapTimeGT3);
 
   final margin = 4.0;
 
@@ -69,7 +69,8 @@ class RaceInputState extends State<RaceInput> {
     _durationHoursDropDownMenuItems = getIntDropDownMenuItems(0, 24, 1, 0);
     _durationMinutesDropDownMenuItems = getIntDropDownMenuItems(0, 55, 5, 2);
     _stintDurationHoursDropDownMenuItems = getIntDropDownMenuItems(0, 1, 1, 0);
-    _stintDurationMinutesDropDownMenuItems = getIntDropDownMenuItems(0, 55, 5, 2);
+    _stintDurationMinutesDropDownMenuItems =
+        getIntDropDownMenuItems(0, 55, 5, 2);
     _lapTimeMinutesDropDownMenuItems = getIntDropDownMenuItems(0, 2, 1, 0);
     _lapTimeSecondsDropDownMenuItems = getIntDropDownMenuItems(0, 59, 1, 2);
     _lapTimeMillisecondsDropDownMenuItems =
@@ -93,6 +94,9 @@ class RaceInputState extends State<RaceInput> {
     _stintDurationHours = (_race.maxStintDuration / 3600).floor();
     _stintDurationMinutes =
         ((_race.maxStintDuration / 60) - _stintDurationHours * 60).floor();
+
+    _loadLapTime();
+    _loadFuelUsage();
 
     super.initState();
   }
@@ -169,8 +173,16 @@ class RaceInputState extends State<RaceInput> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => RaceDetails(race: _race),
+                            builder: (context) => Center(
+                              child: AspectRatio(
+                                aspectRatio: platform.isMobile()
+                                    ? MediaQuery.of(context).size.width /
+                                        MediaQuery.of(context).size.height
+                                    : 0.6,
+                                child: RaceDetails(race: _race),
+                              ),
                             ),
+                          ),
                         );
                       }
                     },
@@ -223,34 +235,31 @@ class RaceInputState extends State<RaceInput> {
 
   Widget carRow() {
     return buildRowTextAndWidget(
-      "Car:",
-      Container(
-        child: IndexedStack(
-          index: _classIndex,
-          alignment: Alignment.centerLeft,
-          children: [
-            DropdownButton(
-              value: _cars[0],
-              items: _gt3CarsDropDownMenuItems,
-              onChanged: carChanged,
-              isExpanded: true,
-            ),
-            DropdownButton(
-              value: _cars[1],
-              items: _gt4CarsDropDownMenuItems,
-              onChanged: carChanged,
-              isExpanded: true,
-            ),
-            Text(_cars[2].displayName, style: Theme.of(context)
-                .textTheme
-                .subtitle1),
-            Text(_cars[3].displayName, style: Theme.of(context)
-                .textTheme
-                .subtitle1),
-          ],
-        ),
-      )
-    );
+        "Car:",
+        Container(
+          child: IndexedStack(
+            index: _classIndex,
+            alignment: Alignment.centerLeft,
+            children: [
+              DropdownButton(
+                value: _cars[0],
+                items: _gt3CarsDropDownMenuItems,
+                onChanged: carChanged,
+                isExpanded: true,
+              ),
+              DropdownButton(
+                value: _cars[1],
+                items: _gt4CarsDropDownMenuItems,
+                onChanged: carChanged,
+                isExpanded: true,
+              ),
+              Text(_cars[2].displayName,
+                  style: Theme.of(context).textTheme.subtitle1),
+              Text(_cars[3].displayName,
+                  style: Theme.of(context).textTheme.subtitle1),
+            ],
+          ),
+        ));
   }
 
   List<DropdownMenuItem<Track>> getTracksDropDownMenuItems() {
@@ -576,7 +585,8 @@ class RaceInputState extends State<RaceInput> {
   }
 
   _openPlayStore() async {
-    const url = 'https://play.google.com/store/apps/details?id=com.svillet.accstrategist';
+    const url =
+        'https://play.google.com/store/apps/details?id=com.svillet.accstrategist';
     if (await canLaunch(url)) {
       await launch(url);
     } else {
