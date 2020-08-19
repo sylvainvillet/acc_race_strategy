@@ -44,12 +44,12 @@ class Race {
     // Calculate the max number of laps with full tank
     final double nbOfLapsWithFullTank = car.tank / fuelUsage;
 
-    // Calculate the number of laps
-    nbOfLaps = _getNbOfLaps(raceDuration, formationLap, mandatoryPitStops,
-        track.timeLostInPits, lapTime);
-
     int minimumPitStops = (raceDuration / maxStintDuration).floor();
     minimumPitStops = max<int>(minimumPitStops, mandatoryPitStops);
+
+    // Calculate the number of laps
+    nbOfLaps = _getNbOfLaps(raceDuration, formationLap, minimumPitStops,
+        track.timeLostInPits, lapTime);
 
     // Number of pit stops without fuel saving
     int nbOfPitStops = minimumPitStops;
