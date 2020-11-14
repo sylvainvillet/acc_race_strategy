@@ -16,8 +16,10 @@ class RaceInput extends StatefulWidget {
 }
 
 class RaceInputState extends State<RaceInput> {
-  Race _race = Race(
-      carsList[0], tracksList[0], 1, 3600, true, 0, 3.0, tracksList[0].lapTimeGT3);
+  Race _race = Race(carsList[0], tracksList[0], 1, 3600, true, 0, 3.0,
+      tracksList[0].lapTimeGT3);
+
+  bool _settingsLoaded = false;
 
   final margin = 4.0;
 
@@ -69,7 +71,8 @@ class RaceInputState extends State<RaceInput> {
     _durationHoursDropDownMenuItems = getIntDropDownMenuItems(0, 24, 1, 0);
     _durationMinutesDropDownMenuItems = getIntDropDownMenuItems(0, 55, 5, 2);
     _stintDurationHoursDropDownMenuItems = getIntDropDownMenuItems(0, 1, 1, 0);
-    _stintDurationMinutesDropDownMenuItems = getIntDropDownMenuItems(0, 55, 5, 2);
+    _stintDurationMinutesDropDownMenuItems =
+        getIntDropDownMenuItems(0, 55, 5, 2);
     _lapTimeMinutesDropDownMenuItems = getIntDropDownMenuItems(0, 2, 1, 0);
     _lapTimeSecondsDropDownMenuItems = getIntDropDownMenuItems(0, 59, 1, 2);
     _lapTimeMillisecondsDropDownMenuItems =
@@ -89,8 +92,10 @@ class RaceInputState extends State<RaceInput> {
 
     _classIndex = settings.getInt('classIndex') ?? 0;
 
-    _cars[0] = getCar('GT3', settings.getString(getCarSettingsKey('GT3')) ?? '');
-    _cars[1] = getCar('GT4', settings.getString(getCarSettingsKey('GT4')) ?? '');
+    _cars[0] =
+        getCar('GT3', settings.getString(getCarSettingsKey('GT3')) ?? '');
+    _cars[1] =
+        getCar('GT4', settings.getString(getCarSettingsKey('GT4')) ?? '');
 
     final trackName = settings.getString('trackName') ?? '';
 
@@ -99,7 +104,11 @@ class RaceInputState extends State<RaceInput> {
       _race.track = getTrack(trackName);
       _race.formationLap = settings.getInt('formationLap') ?? 1;
       _race.raceDuration = settings.getInt('raceDuration') ?? 3600;
-      _race.maxStintDuration = settings.getInt('maxStintDuration') ?? 6900; // 1h55
+      _race.maxStintDuration =
+          settings.getInt('maxStintDuration') ?? 6900; // 1h55
+      _race.maxStintDurationEnabled =
+          settings.getBool('maxStintDurationEnabled') ??
+              (_race.maxStintDuration < 6900);
       _race.refuelingAllowed = settings.getBool('refuelingAllowed') ?? true;
       _race.mandatoryPitStops = settings.getInt('mandatoryPitStops') ?? 0;
       _loadLapTime();
@@ -114,6 +123,8 @@ class RaceInputState extends State<RaceInput> {
       _lapTimeMinutes = (_race.lapTime / 60).floor();
       _lapTimeSeconds = (_race.lapTime - _lapTimeMinutes * 60).floor();
       _lapTimeMilliseconds = ((_race.lapTime * 10).round() % 10) * 100;
+
+      _settingsLoaded = true;
     });
   }
 
@@ -125,6 +136,7 @@ class RaceInputState extends State<RaceInput> {
     settings.setString('trackName', _race.track.ksName);
     settings.setInt('formationLap', _race.formationLap);
     settings.setInt('raceDuration', _race.raceDuration);
+    settings.setBool('maxStintDurationEnabled', _race.maxStintDurationEnabled);
     settings.setInt('maxStintDuration', _race.maxStintDuration);
     settings.setBool('refuelingAllowed', _race.refuelingAllowed);
     settings.setInt('mandatoryPitStops', _race.mandatoryPitStops);
@@ -136,7 +148,7 @@ class RaceInputState extends State<RaceInput> {
     final settings = await SharedPreferences.getInstance();
     setState(() {
       _race.lapTime = settings.getDouble(
-        getLapTimeSettingsKey(_race.track, _cars[_classIndex])) ??
+              getLapTimeSettingsKey(_race.track, _cars[_classIndex])) ??
           _race.track.getLapTime(_cars[_classIndex].className);
 
       _lapTimeMinutes = (_race.lapTime / 60).floor();
@@ -148,16 +160,14 @@ class RaceInputState extends State<RaceInput> {
   void _saveLapTime() async {
     final settings = await SharedPreferences.getInstance();
     settings.setDouble(
-        getLapTimeSettingsKey(_race.track, _cars[_classIndex]),
-        _race.lapTime);
+        getLapTimeSettingsKey(_race.track, _cars[_classIndex]), _race.lapTime);
   }
 
   void resetLapTimes() async {
     final settings = await SharedPreferences.getInstance();
     for (Car car in carsList)
       for (Track track in tracksList)
-        settings.remove(
-            getLapTimeSettingsKey(track, car));
+        settings.remove(getLapTimeSettingsKey(track, car));
 
     _loadLapTime();
   }
@@ -166,7 +176,7 @@ class RaceInputState extends State<RaceInput> {
     final settings = await SharedPreferences.getInstance();
     setState(() {
       _race.fuelUsage = settings.getDouble(
-          getFuelUsageSettingsKey(_race.track, _cars[_classIndex]))??
+              getFuelUsageSettingsKey(_race.track, _cars[_classIndex])) ??
           getFuelUsageDefault(_cars[_classIndex], _race.track);
       _fuelUsageLiters = _race.fuelUsage.floor();
       _fuelUsageCentiliters = (_race.fuelUsage * 100).floor() % 100;
@@ -175,8 +185,7 @@ class RaceInputState extends State<RaceInput> {
 
   void _saveFuelUsage() async {
     final settings = await SharedPreferences.getInstance();
-    settings.setDouble(
-        getFuelUsageSettingsKey(_race.track, _cars[_classIndex]),
+    settings.setDouble(getFuelUsageSettingsKey(_race.track, _cars[_classIndex]),
         _race.fuelUsage);
   }
 
@@ -184,66 +193,97 @@ class RaceInputState extends State<RaceInput> {
     final settings = await SharedPreferences.getInstance();
     for (Car car in carsList)
       for (Track track in tracksList)
-        settings.remove(
-            getFuelUsageSettingsKey(track, car));
+        settings.remove(getFuelUsageSettingsKey(track, car));
 
     _loadFuelUsage();
   }
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        child: Form(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              classRow(),
-              SizedBox(height: margin),
-              carRow(),
-              SizedBox(height: margin),
-              trackRow(),
-              SizedBox(height: margin),
-              durationRow(),
-              SizedBox(height: margin),
-              formationLapRow(),
-              SizedBox(height: margin),
-              refuelingAllowedRow(),
-              SizedBox(height: margin),
-              mandatoryPitStopRow(),
-              SizedBox(height: margin),
-              maxStintDurationRow(),
-              SizedBox(height: margin),
-              lapTimeRow(),
-              SizedBox(height: margin),
-              fuelUsageRow(),
-              SizedBox(height: margin),
-              RaisedButton(
-                onPressed: () {
-                    _race.car = _cars[_classIndex];
-                    _race.computeStrategies();
-                    FocusScope.of(context).unfocus();
+    return _settingsLoaded
+        ? SingleChildScrollView(
+            child: Form(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  _buildCard(
+                    'Event',
+                    Column(
+                      children: [
+                        trackRow(),
+                        durationRow(),
+                        formationLapRow(),
+                      ],
+                    ),
+                  ),
+                  _buildCard(
+                    'Event rules',
+                    Column(
+                      children: [
+                        refuelingAllowedRow(),
+                        mandatoryPitStopRow(),
+                        maxStintDurationRow(),
+                      ],
+                    ),
+                  ),
+                  _buildCard(
+                    'Car',
+                    carRow(),
+                  ),
+                  _buildCard(
+                    'Variables',
+                    Column(
+                      children: [
+                        lapTimeRow(),
+                        fuelUsageRow(),
+                      ],
+                    ),
+                  ),
+                  RaisedButton(
+                    onPressed: () {
+                      _race.car = _cars[_classIndex];
+                      _race.computeStrategies();
+                      FocusScope.of(context).unfocus();
 
-                    if (_race.raceDuration == 0 ||
-                        _race.strategies.length == 0 ||
-                        (_race.strategies[0].nbOfLaps <=
-                            _race.strategies[0].pitStops.length)) {
-                      _showErrorDialog();
-                    } else {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ThemeConsumer(
-                            child: RaceDetails(race: _race),
+                      if (_race.raceDuration == 0 ||
+                          _race.strategies.length == 0 ||
+                          (_race.strategies[0].nbOfLaps <=
+                              _race.strategies[0].pitStops.length)) {
+                        _showErrorDialog();
+                      } else {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ThemeConsumer(
+                              child: RaceDetails(race: _race),
+                            ),
                           ),
-                        ),
-                      );
-                    }
-                    _saveSettings();
-                },
-                child: Text('Go!'),
+                        );
+                      }
+                      _saveSettings();
+                    },
+                    child: Text('Go!'),
+                  ),
+                ],
               ),
+            ),
+          )
+        : Center(child: CircularProgressIndicator());
+  }
+
+  Widget _buildCard(String title, Widget child) {
+    return Container(
+      width: double.infinity,
+      child: Card(
+        elevation: 3,
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(title, style: TextStyle(fontWeight: FontWeight.bold)),
+              child,
             ],
           ),
         ),
@@ -269,53 +309,55 @@ class RaceInputState extends State<RaceInput> {
     return items;
   }
 
-  Widget classRow() {
-    return buildRowTextAndWidget(
-      "Class:",
-      DropdownButton(
-        value: _classIndex,
-        items: _classDropDownMenuItems,
-        onChanged: (int classIndex) {
-          setState(() {
-            _classIndex = classIndex;
-            _loadLapTime();
-            _loadFuelUsage();
-          });
-        },
-        isExpanded: true,
-      ),
-    );
-  }
-
   Widget carRow() {
-    return buildRowTextAndWidget(
-      "Car:",
-      Container(
-        child: IndexedStack(
-          index: _classIndex,
-          alignment: Alignment.centerLeft,
-          children: [
-            DropdownButton(
-              value: _cars[0],
-              items: _gt3CarsDropDownMenuItems,
-              onChanged: carChanged,
-              isExpanded: true,
-            ),
-            DropdownButton(
-              value: _cars[1],
-              items: _gt4CarsDropDownMenuItems,
-              onChanged: carChanged,
-              isExpanded: true,
-            ),
-            Text(_cars[2].displayName, style: Theme.of(context)
-                .textTheme
-                .subtitle1),
-            Text(_cars[3].displayName, style: Theme.of(context)
-                .textTheme
-                .subtitle1),
-          ],
+    return Row(
+      children: [
+        Expanded(
+          flex: 3,
+          child: DropdownButton(
+            value: _classIndex,
+            items: _classDropDownMenuItems,
+            onChanged: (int classIndex) {
+              setState(() {
+                _classIndex = classIndex;
+                _loadLapTime();
+                _loadFuelUsage();
+              });
+            },
+            isExpanded: true,
+          ),
         ),
-      )
+        Spacer(),
+        SizedBox(
+          width: 4.0,
+        ),
+        Expanded(
+          flex: 8,
+          child: Container(
+              child: IndexedStack(
+            index: _classIndex,
+            alignment: Alignment.centerLeft,
+            children: [
+              DropdownButton(
+                value: _cars[0],
+                items: _gt3CarsDropDownMenuItems,
+                onChanged: carChanged,
+                isExpanded: true,
+              ),
+              DropdownButton(
+                value: _cars[1],
+                items: _gt4CarsDropDownMenuItems,
+                onChanged: carChanged,
+                isExpanded: true,
+              ),
+              Text(_cars[2].displayName,
+                  style: Theme.of(context).textTheme.subtitle1),
+              Text(_cars[3].displayName,
+                  style: Theme.of(context).textTheme.subtitle1),
+            ],
+          )),
+        ),
+      ],
     );
   }
 
@@ -448,10 +490,10 @@ class RaceInputState extends State<RaceInput> {
 
   Widget refuelingAllowedRow() {
     return buildRowTextAndWidget(
-      "Refueling allowed:",
+      "Refueling:",
       Row(
         children: <Widget>[
-          Switch(
+          Checkbox(
             value: _race.refuelingAllowed,
             onChanged: (bool value) {
               setState(() {
@@ -483,30 +525,92 @@ class RaceInputState extends State<RaceInput> {
   }
 
   Widget maxStintDurationRow() {
-    return buildRowTextAndWidget(
-      "Max. stint duration:",
-      Row(
-        children: <Widget>[
-          Expanded(
-            child: DropdownButton(
-              value: _stintDurationHours,
-              items: _stintDurationHoursDropDownMenuItems,
-              onChanged: stintHoursChanged,
-              isExpanded: true,
-            ),
+    return Column(
+      children: [
+        buildRowTextAndWidget(
+          "Max. stint duration:",
+          Row(
+            children: [
+              Checkbox(
+                value: _race.maxStintDurationEnabled,
+                onChanged: (value) {
+                  setState(() {
+                    _race.maxStintDurationEnabled = value;
+                  });
+                },
+              ),
+              IconButton(
+                icon: Icon(Icons.help, color: Colors.blue,),
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    barrierDismissible: true,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: Text('Maximum stint duration'),
+                        content: SingleChildScrollView(
+                          child: ListBody(
+                            children: <Widget>[
+                              Text(
+                                  'Enable \"Max. stint duration\" if the event defines the maximum time a driver can stay out without getting a penalty.\n'
+                                  'This can be used to balance fuel efficient cars in endurance races.'),
+                            ],
+                          ),
+                        ),
+                        actions: <Widget>[
+                          FlatButton(
+                            child: Text('Ok'),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
+              ),
+            ],
           ),
-          Expanded(child: Text('h', textAlign: TextAlign.center)),
-          Expanded(
-            child: DropdownButton(
-              value: _stintDurationMinutes,
-              items: _stintDurationMinutesDropDownMenuItems,
-              onChanged: stintMinutesChanged,
-              isExpanded: true,
+        ),
+        Row(
+          children: [
+            Spacer(),
+            Expanded(
+              flex: 2,
+              child: AnimatedCrossFade(
+                duration: const Duration(milliseconds: 300),
+                firstChild: Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: DropdownButton(
+                        value: _stintDurationHours,
+                        items: _stintDurationHoursDropDownMenuItems,
+                        onChanged: stintHoursChanged,
+                        isExpanded: true,
+                      ),
+                    ),
+                    Expanded(child: Text('h', textAlign: TextAlign.center)),
+                    Expanded(
+                      child: DropdownButton(
+                        value: _stintDurationMinutes,
+                        items: _stintDurationMinutesDropDownMenuItems,
+                        onChanged: stintMinutesChanged,
+                        isExpanded: true,
+                      ),
+                    ),
+                    Expanded(child: Text('min', textAlign: TextAlign.center)),
+                  ],
+                ),
+                secondChild: Container(),
+                crossFadeState: _race.maxStintDurationEnabled
+                    ? CrossFadeState.showFirst
+                    : CrossFadeState.showSecond,
+              ),
             ),
-          ),
-          Expanded(child: Text('min', textAlign: TextAlign.center)),
-        ],
-      ),
+          ],
+        ),
+      ],
     );
   }
 
@@ -589,14 +693,16 @@ class RaceInputState extends State<RaceInput> {
   void stintHoursChanged(int value) {
     setState(() {
       _stintDurationHours = value;
-      _race.maxStintDuration = _stintDurationHours * 3600 + _stintDurationMinutes * 60;
+      _race.maxStintDuration =
+          _stintDurationHours * 3600 + _stintDurationMinutes * 60;
     });
   }
 
   void stintMinutesChanged(int value) {
     setState(() {
       _stintDurationMinutes = value;
-      _race.maxStintDuration = _stintDurationHours * 3600 + _stintDurationMinutes * 60;
+      _race.maxStintDuration =
+          _stintDurationHours * 3600 + _stintDurationMinutes * 60;
     });
   }
 
@@ -615,7 +721,7 @@ class RaceInputState extends State<RaceInput> {
   Future<void> _showErrorDialog() async {
     return showDialog<void>(
       context: context,
-      barrierDismissible: false, // user must tap button!
+      barrierDismissible: true,
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text('No strategies found'),

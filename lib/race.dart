@@ -21,6 +21,7 @@ class Race {
   int raceDuration;
   int realRaceDuration;
   int maxStintDuration;
+  bool maxStintDurationEnabled = false;
   bool refuelingAllowed;
   int mandatoryPitStops;
   double fuelUsage;
@@ -44,8 +45,11 @@ class Race {
     // Calculate the max number of laps with full tank
     final double nbOfLapsWithFullTank = car.tank / fuelUsage;
 
-    int minimumPitStops = (raceDuration / maxStintDuration).floor();
-    minimumPitStops = max<int>(minimumPitStops, mandatoryPitStops);
+    int minimumPitStops = mandatoryPitStops;
+    if (maxStintDurationEnabled) {
+      minimumPitStops =
+          max<int>(minimumPitStops, (raceDuration / maxStintDuration).floor());
+    }
 
     // Calculate the number of laps
     nbOfLaps = _getNbOfLaps(raceDuration, formationLap, minimumPitStops,
@@ -120,7 +124,8 @@ class Race {
         PitStop pitStop = new PitStop();
         pitStop.fuelToAdd = 0;
         pitStop.pitStopLap = lap - formationLap;
-        pitStop.raceTimeLeft = getRaceTimeLeft(pitStop.pitStopLap, i, strategy.realLapTime);
+        pitStop.raceTimeLeft =
+            getRaceTimeLeft(pitStop.pitStopLap, i, strategy.realLapTime);
         strategy.pitStops.add(pitStop);
         strategy.stints
             .add(Stint(nbOfLapsPerStint, realFuelUsage * nbOfLapsPerStint));
@@ -150,7 +155,8 @@ class Race {
         PitStop pitStop = new PitStop();
         pitStop.fuelToAdd = fuelNeeded;
         pitStop.pitStopLap = lap - formationLap;
-        pitStop.raceTimeLeft = getRaceTimeLeft(pitStop.pitStopLap, i, strategy.realLapTime);
+        pitStop.raceTimeLeft =
+            getRaceTimeLeft(pitStop.pitStopLap, i, strategy.realLapTime);
         strategy.pitStops.add(pitStop);
         strategy.stints.add(Stint(nbOfLapsPerStint, fuelNeeded.toDouble()));
       }
@@ -170,9 +176,11 @@ class Race {
         (nbOfLaps - formationLap);
   }
 
-  int getRaceTimeLeft(int nbOfLapsDone, int nbOfPitStopsDone, double realLapTime)
-  {
-    double timeLeft = raceDuration - nbOfLapsDone * realLapTime - nbOfPitStopsDone * track.timeLostInPits;
+  int getRaceTimeLeft(
+      int nbOfLapsDone, int nbOfPitStopsDone, double realLapTime) {
+    double timeLeft = raceDuration -
+        nbOfLapsDone * realLapTime -
+        nbOfPitStopsDone * track.timeLostInPits;
     if (timeLeft < 0) timeLeft = 0.0;
 
     return timeLeft.ceil();
