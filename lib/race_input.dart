@@ -254,7 +254,11 @@ class RaceInputState extends State<RaceInput> {
                       _race.strategies.length == 0 ||
                       (_race.strategies[0].nbOfLaps <=
                           _race.strategies[0].pitStops.length)) {
-                    _showErrorDialog();
+                    if (_race.refuelingAllowed) {
+                      _showErrorDialog('Please check race length and mandatory pit stops.');
+                    } else {
+                      _showErrorDialog('Please try to enable refueling.');
+                    }
                   } else {
                     Navigator.push(
                       context,
@@ -722,7 +726,7 @@ class RaceInputState extends State<RaceInput> {
     });
   }
 
-  Future<void> _showErrorDialog() async {
+  Future<void> _showErrorDialog(String troubleshooting) async {
     return showDialog<void>(
       context: context,
       barrierDismissible: true,
@@ -732,7 +736,7 @@ class RaceInputState extends State<RaceInput> {
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
-                Text('Please try different settings.'),
+                Text(troubleshooting),
               ],
             ),
           ),
