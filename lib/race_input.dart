@@ -200,75 +200,82 @@ class RaceInputState extends State<RaceInput> {
 
   @override
   Widget build(BuildContext context) {
-    return _settingsLoaded
-        ? SingleChildScrollView(
-            child: Form(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  _buildCard(
-                    'Event',
-                    Column(
-                      children: [
-                        trackRow(),
-                        durationRow(),
-                        formationLapRow(),
-                      ],
-                    ),
-                  ),
-                  _buildCard(
-                    'Event rules',
-                    Column(
-                      children: [
-                        refuelingAllowedRow(),
-                        mandatoryPitStopRow(),
-                        maxStintDurationRow(),
-                      ],
-                    ),
-                  ),
-                  _buildCard(
-                    'Car',
-                    carRow(),
-                  ),
-                  _buildCard(
-                    'Variables',
-                    Column(
-                      children: [
-                        lapTimeRow(),
-                        fuelUsageRow(),
-                      ],
-                    ),
-                  ),
-                  RaisedButton(
-                    onPressed: () {
-                      _race.car = _cars[_classIndex];
-                      _race.computeStrategies();
-                      FocusScope.of(context).unfocus();
-
-                      if (_race.raceDuration == 0 ||
-                          _race.strategies.length == 0 ||
-                          (_race.strategies[0].nbOfLaps <=
-                              _race.strategies[0].pitStops.length)) {
-                        _showErrorDialog();
-                      } else {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ThemeConsumer(
-                              child: RaceDetails(race: _race),
-                            ),
-                          ),
-                        );
-                      }
-                      _saveSettings();
-                    },
-                    child: Text('Go!'),
-                  ),
-                ],
+    if (_settingsLoaded) {
+      return SingleChildScrollView(
+        child: Form(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              _buildCard(
+                'Event',
+                Column(
+                  children: [
+                    trackRow(),
+                    durationRow(),
+                    formationLapRow(),
+                  ],
+                ),
               ),
-            ),
-          )
-        : Center(child: CircularProgressIndicator());
+              _buildCard(
+                'Event rules',
+                Column(
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(flex: 4, child: mandatoryPitStopRow()),
+                        Spacer(),
+                        Expanded(flex: 3, child: refuelingAllowedRow()),
+                      ],
+                    ),
+                    maxStintDurationRow(),
+                  ],
+                ),
+              ),
+              _buildCard(
+                'Car',
+                carRow(),
+              ),
+              _buildCard(
+                'Variables',
+                Column(
+                  children: [
+                    lapTimeRow(),
+                    fuelUsageRow(),
+                  ],
+                ),
+              ),
+              RaisedButton(
+                onPressed: () {
+                  _race.car = _cars[_classIndex];
+                  _race.computeStrategies();
+                  FocusScope.of(context).unfocus();
+
+                  if (_race.raceDuration == 0 ||
+                      _race.strategies.length == 0 ||
+                      (_race.strategies[0].nbOfLaps <=
+                          _race.strategies[0].pitStops.length)) {
+                    _showErrorDialog();
+                  } else {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ThemeConsumer(
+                          child: RaceDetails(race: _race),
+                        ),
+                      ),
+                    );
+                  }
+                  _saveSettings();
+                },
+                child: Text('Go!'),
+              ),
+            ],
+          ),
+        ),
+      );
+    } else {
+      return Center(child: CircularProgressIndicator());
+    }
   }
 
   Widget _buildCard(String title, Widget child) {
@@ -489,39 +496,33 @@ class RaceInputState extends State<RaceInput> {
   }
 
   Widget refuelingAllowedRow() {
-    return buildRowTextAndWidget(
-      "Refueling:",
-      Row(
-        children: <Widget>[
-          Checkbox(
-            value: _race.refuelingAllowed,
-            onChanged: (bool value) {
-              setState(() {
-                _race.refuelingAllowed = value;
-              });
-            },
-          ),
-        ],
+    return Row(children: [
+      Text("Refueling:"),
+      Checkbox(
+        value: _race.refuelingAllowed,
+        onChanged: (bool value) {
+          setState(() {
+            _race.refuelingAllowed = value;
+          });
+        },
       ),
-    );
+    ]);
   }
 
   Widget mandatoryPitStopRow() {
-    return buildRowTextAndWidget(
-        "Mandatory pit stops:",
-        Row(
-          children: <Widget>[
-            Expanded(
-              child: DropdownButton(
-                value: _race.mandatoryPitStops,
-                items: _mandatoryPitStopsDropDownMenuItems,
-                onChanged: mandatoryPitStopChanged,
-                isExpanded: true,
-              ),
-            ),
-            Spacer(flex: 3),
-          ],
-        ));
+    return Row(
+      children: [
+        Expanded(flex: 2, child: Text("Mandatory pit stops:")),
+        Expanded(
+          child: DropdownButton(
+            value: _race.mandatoryPitStops,
+            items: _mandatoryPitStopsDropDownMenuItems,
+            onChanged: mandatoryPitStopChanged,
+            isExpanded: true,
+          ),
+        ),
+      ],
+    );
   }
 
   Widget maxStintDurationRow() {
@@ -540,7 +541,10 @@ class RaceInputState extends State<RaceInput> {
                 },
               ),
               IconButton(
-                icon: Icon(Icons.help, color: Colors.blue,),
+                icon: Icon(
+                  Icons.help,
+                  color: Colors.blue,
+                ),
                 onPressed: () {
                   showDialog(
                     context: context,
