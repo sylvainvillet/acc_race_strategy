@@ -1,3 +1,4 @@
+import 'package:accracestrategy/faq.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info/package_info.dart';
 import 'package:theme_provider/theme_provider.dart';
@@ -59,7 +60,7 @@ class HomePage extends StatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
-enum PopupMenuItems { theme, resetLapTimes, resetFuelUsages, about }
+enum PopupMenuItems { theme, resetLapTimes, resetFuelUsages, faq, about }
 
 class _HomePageState extends State<HomePage> {
   final GlobalKey<RaceInputState> _key = GlobalKey();
@@ -119,6 +120,10 @@ class _HomePageState extends State<HomePage> {
                 child: Text("Reset fuel usages"),
               ),
               PopupMenuItem(
+                value: PopupMenuItems.faq,
+                child: Text("FAQ"),
+              ),
+              PopupMenuItem(
                 value: PopupMenuItems.about,
                 child: Text("About"),
               ),
@@ -133,6 +138,16 @@ class _HomePageState extends State<HomePage> {
                   break;
                 case PopupMenuItems.resetFuelUsages:
                   _showResetFuelUsagesPopup(context);
+                  break;
+                case PopupMenuItems.faq:
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ThemeConsumer(
+                        child: Faq(),
+                      ),
+                    ),
+                  );
                   break;
                 case PopupMenuItems.about:
                   _showAboutPopup(context);
@@ -259,7 +274,8 @@ class _HomePageState extends State<HomePage> {
       Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text('- Added stint details page with lap-by-lap breakdown (click on stint to open)'),
+          Text(
+              '- Added stint details page with lap-by-lap breakdown (click on stint to open)'),
           SizedBox(height: margin),
           Text('- Added real race duration to Strategy screen'),
           SizedBox(height: margin),
