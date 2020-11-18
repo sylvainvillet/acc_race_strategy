@@ -517,6 +517,7 @@ class RaceInputState extends State<RaceInput> {
     return Row(
       children: [
         Expanded(flex: 2, child: Text("Mandatory pit stops:")),
+        SizedBox(width: 4.0,),
         Expanded(
           child: DropdownButton(
             value: _race.mandatoryPitStops,
