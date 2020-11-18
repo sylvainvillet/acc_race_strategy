@@ -36,10 +36,11 @@ Track getTrack(String ksName)
   return returnValue;
 }
 
-const List<Track> tracksList = [
+const List<Track> tracksList = [       // Length, GT3,   GT4,   Cup,   ST,    Pit stop duration
   Track("barcelona",      "Barcelona",      4665, 104.1, 114.2, 107.7, 108.6, 60),
   Track("Brands_Hatch",   "Brands Hatch",   3908, 83.9,  90.7,  85.6,  86.5,  60),
   Track("hungaroring",    "Hungaroring",    4381, 104.5, 113.3, 106.8, 108.2, 60),
+  Track("Imola",          "Imola",          4959, 104.0, 111.8, 105.6, 108.3, 60),
   Track("Kyalami",        "Kyalami",        4522, 101.0, 110.4, 104.3, 105.5, 60),
   Track("Laguna_Seca",    "Laguna Seca",    3602, 82.6,  90.0,  84.9,  85.5,  60),
   Track("misano",         "Misano",         4226, 93.8,  102.3, 96.6,  97.6,  60),

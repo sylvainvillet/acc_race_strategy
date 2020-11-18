@@ -36,6 +36,8 @@ const kFaq = {
           'so you can safely use the app with any of the 2 models.',
   'Can I see a lap-by-lap breakdown?':
       'Yes, just click on a stint to open a detailed view.',
+  'I have another question, can I contact you?':
+  'Sure, you can send me an e-mail at sylvain.villet@gmail.com.',
 };
 
 class Faq extends StatelessWidget {
