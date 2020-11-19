@@ -57,7 +57,7 @@ class RaceDetails extends StatelessWidget {
           children: <Widget>[
             Card(
               margin: const EdgeInsets.only(),
-              elevation: 5,
+              elevation: 3,
               child: ListTile(
                 contentPadding: const EdgeInsets.symmetric(
                     horizontal: 16.0, vertical: 12.0),
@@ -128,7 +128,7 @@ class RaceDetails extends StatelessWidget {
       ),
       Card(
         margin: const EdgeInsets.only(),
-        elevation: 5,
+        elevation: 3,
         child: ListTile(
           leading: Icon(Icons.flag, color: Colors.lightGreen),
           title: Text('Race start'),
@@ -201,7 +201,7 @@ class RaceDetails extends StatelessWidget {
 
   Card pitStopWidget(int index, PitStop pitStop) {
     return Card(
-      elevation: 5,
+      elevation: 3,
       margin: const EdgeInsets.only(),
       child: ListTile(
         leading: Icon(Icons.local_gas_station),

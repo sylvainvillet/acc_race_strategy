@@ -126,26 +126,44 @@ class RaceInputState extends State<RaceInput> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
-              classRow(),
-              SizedBox(height: margin),
-              carRow(),
-              SizedBox(height: margin),
-              trackRow(),
-              SizedBox(height: margin),
-              durationRow(),
-              SizedBox(height: margin),
-              formationLapRow(),
-              SizedBox(height: margin),
-              refuelingAllowedRow(),
-              SizedBox(height: margin),
-              mandatoryPitStopRow(),
-              SizedBox(height: margin),
-              maxStintDurationRow(),
-              SizedBox(height: margin),
-              lapTimeRow(),
-              SizedBox(height: margin),
-              fuelUsageRow(),
-              SizedBox(height: margin),
+              _buildCard(
+                'Event',
+                Column(
+                  children: [
+                    trackRow(),
+                    durationRow(),
+                    formationLapRow(),
+                  ],
+                ),
+              ),
+              _buildCard(
+                'Event rules',
+                Column(
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(flex: 4, child: mandatoryPitStopRow()),
+                        Spacer(),
+                        Expanded(flex: 3, child: refuelingAllowedRow()),
+                      ],
+                    ),
+                    maxStintDurationRow(),
+                  ],
+                ),
+              ),
+              _buildCard(
+                'Car',
+                carRow(),
+              ),
+              _buildCard(
+                'Variables',
+                Column(
+                  children: [
+                    lapTimeRow(),
+                    fuelUsageRow(),
+                  ],
+                ),
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -168,7 +186,12 @@ class RaceInputState extends State<RaceInput> {
                           _race.strategies.length == 0 ||
                           (_race.strategies[0].nbOfLaps <=
                               _race.strategies[0].pitStops.length)) {
-                        _showErrorDialog();
+                        if (_race.refuelingAllowed) {
+                          _showErrorDialog(
+                              'Please check race length and mandatory pit stops.');
+                        } else {
+                          _showErrorDialog('Please try to enable refueling.');
+                        }
                       } else {
                         Navigator.push(
                           context,
@@ -197,6 +220,26 @@ class RaceInputState extends State<RaceInput> {
     );
   }
 
+  Widget _buildCard(String title, Widget child) {
+    return Container(
+      width: double.infinity,
+      child: Card(
+        elevation: 3,
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(title, style: TextStyle(fontWeight: FontWeight.bold)),
+              child,
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   List<DropdownMenuItem<int>> getClassDropDownMenuItems() {
     return [
       DropdownMenuItem(value: 0, child: Text('GT3')),
@@ -215,29 +258,32 @@ class RaceInputState extends State<RaceInput> {
     return items;
   }
 
-  Widget classRow() {
-    return buildRowTextAndWidget(
-      "Class:",
-      DropdownButton(
-        value: _classIndex,
-        items: _classDropDownMenuItems,
-        onChanged: (int classIndex) {
-          setState(() {
-            _classIndex = classIndex;
-            _loadLapTime();
-            _loadFuelUsage();
-          });
-        },
-        isExpanded: true,
-      ),
-    );
-  }
-
   Widget carRow() {
-    return buildRowTextAndWidget(
-        "Car:",
-        Container(
-          child: IndexedStack(
+    return Row(
+      children: [
+        Expanded(
+          flex: 3,
+          child: DropdownButton(
+            value: _classIndex,
+            items: _classDropDownMenuItems,
+            onChanged: (int classIndex) {
+              setState(() {
+                _classIndex = classIndex;
+                _loadLapTime();
+                _loadFuelUsage();
+              });
+            },
+            isExpanded: true,
+          ),
+        ),
+        Spacer(),
+        SizedBox(
+          width: 4.0,
+        ),
+        Expanded(
+          flex: 8,
+          child: Container(
+              child: IndexedStack(
             index: _classIndex,
             alignment: Alignment.centerLeft,
             children: [
@@ -258,8 +304,10 @@ class RaceInputState extends State<RaceInput> {
               Text(_cars[3].displayName,
                   style: Theme.of(context).textTheme.subtitle1),
             ],
-          ),
-        ));
+          )),
+        ),
+      ],
+    );
   }
 
   List<DropdownMenuItem<Track>> getTracksDropDownMenuItems() {
@@ -390,66 +438,128 @@ class RaceInputState extends State<RaceInput> {
   }
 
   Widget refuelingAllowedRow() {
-    return buildRowTextAndWidget(
-      "Refueling allowed:",
-      Row(
-        children: <Widget>[
-          Switch(
-            value: _race.refuelingAllowed,
-            onChanged: (bool value) {
-              setState(() {
-                _race.refuelingAllowed = value;
-              });
-            },
-          ),
-        ],
+    return Row(children: [
+      Text("Refueling:"),
+      Checkbox(
+        value: _race.refuelingAllowed,
+        onChanged: (bool value) {
+          setState(() {
+            _race.refuelingAllowed = value;
+          });
+        },
       ),
-    );
+    ]);
   }
 
   Widget mandatoryPitStopRow() {
-    return buildRowTextAndWidget(
-        "Mandatory pit stops:",
-        Row(
-          children: <Widget>[
-            Expanded(
-              child: DropdownButton(
-                value: _race.mandatoryPitStops,
-                items: _mandatoryPitStopsDropDownMenuItems,
-                onChanged: mandatoryPitStopChanged,
-                isExpanded: true,
-              ),
-            ),
-            Spacer(flex: 3),
-          ],
-        ));
+    return Row(
+      children: [
+        Expanded(flex: 2, child: Text("Mandatory pit stops:")),
+        SizedBox(
+          width: 4.0,
+        ),
+        Expanded(
+          child: DropdownButton(
+            value: _race.mandatoryPitStops,
+            items: _mandatoryPitStopsDropDownMenuItems,
+            onChanged: mandatoryPitStopChanged,
+            isExpanded: true,
+          ),
+        ),
+      ],
+    );
   }
 
   Widget maxStintDurationRow() {
-    return buildRowTextAndWidget(
-      "Max. stint duration:",
-      Row(
-        children: <Widget>[
-          Expanded(
-            child: DropdownButton(
-              value: _stintDurationHours,
-              items: _stintDurationHoursDropDownMenuItems,
-              onChanged: stintHoursChanged,
-              isExpanded: true,
-            ),
+    return Column(
+      children: [
+        buildRowTextAndWidget(
+          "Max. stint duration:",
+          Row(
+            children: [
+              Checkbox(
+                value: _race.maxStintDurationEnabled,
+                onChanged: (value) {
+                  setState(() {
+                    _race.maxStintDurationEnabled = value;
+                  });
+                },
+              ),
+              IconButton(
+                icon: Icon(
+                  Icons.help,
+                  color: Colors.blue,
+                ),
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    barrierDismissible: true,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: Text('Maximum stint duration'),
+                        content: SingleChildScrollView(
+                          child: ListBody(
+                            children: <Widget>[
+                              Text(
+                                  'Enable \"Max. stint duration\" if the event defines the maximum time a driver can stay out without getting a penalty.\n'
+                                  'This can be used to balance fuel efficient cars in endurance races.'),
+                            ],
+                          ),
+                        ),
+                        actions: <Widget>[
+                          FlatButton(
+                            child: Text('Ok'),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
+              ),
+            ],
           ),
-          Expanded(child: Text('h', textAlign: TextAlign.center)),
-          Expanded(
-            child: DropdownButton(
-              value: _stintDurationMinutes,
-              items: _stintDurationMinutesDropDownMenuItems,
-              onChanged: stintMinutesChanged,
-              isExpanded: true,
+        ),
+        Row(
+          children: [
+            Spacer(),
+            Expanded(
+              flex: 2,
+              child: AnimatedCrossFade(
+                duration: const Duration(milliseconds: 300),
+                firstChild: Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: DropdownButton(
+                        value: _stintDurationHours,
+                        items: _stintDurationHoursDropDownMenuItems,
+                        onChanged: stintHoursChanged,
+                        isExpanded: true,
+                      ),
+                    ),
+                    Expanded(child: Text('h', textAlign: TextAlign.center)),
+                    Expanded(
+                      child: DropdownButton(
+                        value: _stintDurationMinutes,
+                        items: _stintDurationMinutesDropDownMenuItems,
+                        onChanged: stintMinutesChanged,
+                        isExpanded: true,
+                      ),
+                    ),
+                    Expanded(child: Text('min', textAlign: TextAlign.center)),
+                  ],
+                ),
+                secondChild: Container(),
+                crossFadeState: _race.maxStintDurationEnabled
+                    ? CrossFadeState.showFirst
+                    : CrossFadeState.showSecond,
+              ),
             ),
-          ),
-          Expanded(child: Text('min', textAlign: TextAlign.center)),
-        ],
-      ),
+          ],
+        ),
+      ],
     );
   }
 
@@ -557,17 +667,17 @@ class RaceInputState extends State<RaceInput> {
     });
   }
 
-  Future<void> _showErrorDialog() async {
+  Future<void> _showErrorDialog(String troubleshooting) async {
     return showDialog<void>(
       context: context,
-      barrierDismissible: false, // user must tap button!
+      barrierDismissible: true,
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text('No strategies found'),
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
-                Text('Please try different settings.'),
+                Text(troubleshooting),
               ],
             ),
           ),

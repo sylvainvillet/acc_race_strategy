@@ -1,3 +1,4 @@
+import 'package:accracestrategy/faq.dart';
 import 'package:flutter/material.dart';
 import './race_input.dart';
 import './platform.dart';
@@ -33,7 +34,7 @@ class HomePage extends StatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
-enum PopupMenuItems { about }
+enum PopupMenuItems { faq, about }
 
 class _HomePageState extends State<HomePage> {
   final GlobalKey<RaceInputState> _key = GlobalKey();
@@ -54,6 +55,10 @@ class _HomePageState extends State<HomePage> {
             PopupMenuButton<PopupMenuItems>(
               itemBuilder: (context) => [
                 PopupMenuItem(
+                  value: PopupMenuItems.faq,
+                  child: Text("FAQ"),
+                ),
+                PopupMenuItem(
                   value: PopupMenuItems.about,
                   child: Text("About"),
                 ),
@@ -62,6 +67,22 @@ class _HomePageState extends State<HomePage> {
                 switch (result) {
                   case PopupMenuItems.about:
                     _showAboutPopup(context);
+                    break;
+                  case PopupMenuItems.faq:
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => Center(
+                          child: AspectRatio(
+                            aspectRatio: platform.isMobile()
+                                ? MediaQuery.of(context).size.width /
+                                MediaQuery.of(context).size.height
+                                : 0.6,
+                            child: Faq(),
+                          ),
+                        ),
+                      ),
+                    );
                     break;
                 }
               },

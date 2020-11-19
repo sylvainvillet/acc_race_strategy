@@ -86,12 +86,13 @@ Widget buildRow3Texts(String text1, String text2, String text3) {
 }
 
 Widget buildRowTextAndWidget(String text, Widget inputWidget,
-    {FontWeight fontWeight = FontWeight.bold, int flex = 2}) {
+    {FontWeight fontWeight = FontWeight.normal, int flex = 2}) {
   return Row(
     children: <Widget>[
       Expanded(
         child: Text(text, style: TextStyle(fontWeight: fontWeight)),
       ),
+      SizedBox(width: 4.0,),
       Expanded(
         flex: flex,
         child: inputWidget,
