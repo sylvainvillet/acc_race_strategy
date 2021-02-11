@@ -274,14 +274,7 @@ class _HomePageState extends State<HomePage> {
       Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text(
-              '- Reworked home screen'),
-          SizedBox(height: margin),
-          Text('- Added Imola'),
-          SizedBox(height: margin),
-          Text('- Added FAQ'),
-          SizedBox(height: margin),
-          Text('- Added help dialog for Max. stint duration'),
+          Text('- Added British Pack tracks with default lap times and fuel usage values'),
         ],
       ),
     );
