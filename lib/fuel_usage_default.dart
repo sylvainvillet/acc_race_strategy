@@ -36,6 +36,9 @@ const List<FuelUsageType> fuelUsageDefaultList = [
   FuelUsageType('amr_v12_vantage_gt3', 'Laguna_Seca',   2.40),
   FuelUsageType('amr_v12_vantage_gt3', 'Suzuka',        3.25),
   FuelUsageType('amr_v12_vantage_gt3', 'Kyalami',       2.90),
+  FuelUsageType('amr_v12_vantage_gt3', 'donington',     2.18),
+  FuelUsageType('amr_v12_vantage_gt3', 'oulton_park',   2.30),
+  FuelUsageType('amr_v12_vantage_gt3', 'snetterton',    2.55),
 
   FuelUsageType('amr_v8_vantage_gt3', 'monza',         3.25),
   FuelUsageType('amr_v8_vantage_gt3', 'Brands_Hatch',  2.40),
@@ -53,6 +56,9 @@ const List<FuelUsageType> fuelUsageDefaultList = [
   FuelUsageType('amr_v8_vantage_gt3', 'Laguna_Seca',   2.40),
   FuelUsageType('amr_v8_vantage_gt3', 'Suzuka',        3.30),
   FuelUsageType('amr_v8_vantage_gt3', 'Kyalami',       2.60),
+  FuelUsageType('amr_v8_vantage_gt3', 'donington',     2.18),
+  FuelUsageType('amr_v8_vantage_gt3', 'oulton_park',   2.35),
+  FuelUsageType('amr_v8_vantage_gt3', 'snetterton',    2.57),
 
   FuelUsageType('audi_r8_lms_evo', 'monza',         3.23),
   FuelUsageType('audi_r8_lms_evo', 'Brands_Hatch',  3.00),
@@ -70,6 +76,9 @@ const List<FuelUsageType> fuelUsageDefaultList = [
   FuelUsageType('audi_r8_lms_evo', 'Laguna_Seca',   2.61),
   FuelUsageType('audi_r8_lms_evo', 'Suzuka',        3.70),
   FuelUsageType('audi_r8_lms_evo', 'Kyalami',       2.84),
+  FuelUsageType('audi_r8_lms_evo', 'donington',     2.42),
+  FuelUsageType('audi_r8_lms_evo', 'oulton_park',   2.50),
+  FuelUsageType('audi_r8_lms_evo', 'snetterton',    2.75),
 
   FuelUsageType('bentley_continental_gt3_2018', 'monza',         3.30),
   FuelUsageType('bentley_continental_gt3_2018', 'Brands_Hatch',  2.70),
@@ -87,6 +96,9 @@ const List<FuelUsageType> fuelUsageDefaultList = [
   FuelUsageType('bentley_continental_gt3_2018', 'Laguna_Seca',   2.45),
   FuelUsageType('bentley_continental_gt3_2018', 'Suzuka',        3.55),
   FuelUsageType('bentley_continental_gt3_2018', 'Kyalami',       2.70),
+  FuelUsageType('bentley_continental_gt3_2018', 'donington',     2.34),
+  FuelUsageType('bentley_continental_gt3_2018', 'oulton_park',   2.35),
+  FuelUsageType('bentley_continental_gt3_2018', 'snetterton',    2.60),
 
   FuelUsageType('bmw_m6_gt3', 'monza',         3.50),
   FuelUsageType('bmw_m6_gt3', 'Brands_Hatch',  2.86),
@@ -104,6 +116,9 @@ const List<FuelUsageType> fuelUsageDefaultList = [
   FuelUsageType('bmw_m6_gt3', 'Laguna_Seca',   2.45),
   FuelUsageType('bmw_m6_gt3', 'Suzuka',        3.55),
   FuelUsageType('bmw_m6_gt3', 'Kyalami',       2.86),
+  FuelUsageType('bmw_m6_gt3', 'donington',     2.45),
+  FuelUsageType('bmw_m6_gt3', 'oulton_park',   2.42),
+  FuelUsageType('bmw_m6_gt3', 'snetterton',    2.67),
 
   FuelUsageType('jaguar_g3', 'monza',         3.70),
   FuelUsageType('jaguar_g3', 'Brands_Hatch',  3.20),
@@ -121,6 +136,9 @@ const List<FuelUsageType> fuelUsageDefaultList = [
   FuelUsageType('jaguar_g3', 'Laguna_Seca',   2.70),
   FuelUsageType('jaguar_g3', 'Suzuka',        3.80),
   FuelUsageType('jaguar_g3', 'Kyalami',       3.20),
+  FuelUsageType('jaguar_g3', 'donington',     2.60),
+  FuelUsageType('jaguar_g3', 'oulton_park',   2.59),
+  FuelUsageType('jaguar_g3', 'snetterton',    2.86),
 
   FuelUsageType('ferrari_488_gt3', 'monza',         3.10),
   FuelUsageType('ferrari_488_gt3', 'Brands_Hatch',  2.61),
@@ -138,6 +156,9 @@ const List<FuelUsageType> fuelUsageDefaultList = [
   FuelUsageType('ferrari_488_gt3', 'Laguna_Seca',   2.15),
   FuelUsageType('ferrari_488_gt3', 'Suzuka',        3.25),
   FuelUsageType('ferrari_488_gt3', 'Kyalami',       2.61),
+  FuelUsageType('ferrari_488_gt3', 'donington',     2.35),
+  FuelUsageType('ferrari_488_gt3', 'oulton_park',   2.25),
+  FuelUsageType('ferrari_488_gt3', 'snetterton',    2.55),
 
   FuelUsageType('honda_nsx_gt3_evo', 'monza',         3.45),
   FuelUsageType('honda_nsx_gt3_evo', 'Brands_Hatch',  2.40),
@@ -155,6 +176,9 @@ const List<FuelUsageType> fuelUsageDefaultList = [
   FuelUsageType('honda_nsx_gt3_evo', 'Laguna_Seca',   2.70),
   FuelUsageType('honda_nsx_gt3_evo', 'Suzuka',        3.70),
   FuelUsageType('honda_nsx_gt3_evo', 'Kyalami',       2.85),
+  FuelUsageType('honda_nsx_gt3_evo', 'donington',     3.20),
+  FuelUsageType('honda_nsx_gt3_evo', 'oulton_park',   2.40),
+  FuelUsageType('honda_nsx_gt3_evo', 'snetterton',    2.40),
 
   FuelUsageType('lamborghini_huracan_gt3_evo', 'monza',         3.29),
   FuelUsageType('lamborghini_huracan_gt3_evo', 'Brands_Hatch',  2.85),
@@ -172,6 +196,9 @@ const List<FuelUsageType> fuelUsageDefaultList = [
   FuelUsageType('lamborghini_huracan_gt3_evo', 'Laguna_Seca',   2.70),
   FuelUsageType('lamborghini_huracan_gt3_evo', 'Suzuka',        3.80),
   FuelUsageType('lamborghini_huracan_gt3_evo', 'Kyalami',       2.79),
+  FuelUsageType('lamborghini_huracan_gt3_evo', 'donington',     2.50),
+  FuelUsageType('lamborghini_huracan_gt3_evo', 'oulton_park',   2.50),
+  FuelUsageType('lamborghini_huracan_gt3_evo', 'snetterton',    2.75),
 
   FuelUsageType('lamborghini_huracan_st', 'monza',         3.40),
   FuelUsageType('lamborghini_huracan_st', 'Brands_Hatch',  2.90),
@@ -189,6 +216,9 @@ const List<FuelUsageType> fuelUsageDefaultList = [
   FuelUsageType('lamborghini_huracan_st', 'Laguna_Seca',   2.70),
   FuelUsageType('lamborghini_huracan_st', 'Suzuka',        3.80),
   FuelUsageType('lamborghini_huracan_st', 'Kyalami',       2.90),
+  FuelUsageType('lamborghini_huracan_st', 'donington',     2.13),
+  FuelUsageType('lamborghini_huracan_st', 'oulton_park',   3.30),
+  FuelUsageType('lamborghini_huracan_st', 'snetterton',    2.55),
 
   FuelUsageType('lexus_rc_f_gt3', 'monza',         3.50),
   FuelUsageType('lexus_rc_f_gt3', 'Brands_Hatch',  2.93),
@@ -206,6 +236,9 @@ const List<FuelUsageType> fuelUsageDefaultList = [
   FuelUsageType('lexus_rc_f_gt3', 'Laguna_Seca',   2.60),
   FuelUsageType('lexus_rc_f_gt3', 'Suzuka',        3.70),
   FuelUsageType('lexus_rc_f_gt3', 'Kyalami',       2.93),
+  FuelUsageType('lexus_rc_f_gt3', 'donington',     2.60),
+  FuelUsageType('lexus_rc_f_gt3', 'oulton_park',   2.45),
+  FuelUsageType('lexus_rc_f_gt3', 'snetterton',    2.70),
 
   FuelUsageType('mclaren_650s_gt3', 'monza',         3.45),
   FuelUsageType('mclaren_650s_gt3', 'Brands_Hatch',  2.95),
@@ -223,6 +256,9 @@ const List<FuelUsageType> fuelUsageDefaultList = [
   FuelUsageType('mclaren_650s_gt3', 'Laguna_Seca',   2.70),
   FuelUsageType('mclaren_650s_gt3', 'Suzuka',        3.80),
   FuelUsageType('mclaren_650s_gt3', 'Kyalami',       2.95),
+  FuelUsageType('mclaren_650s_gt3', 'donington',     2.60),
+  FuelUsageType('mclaren_650s_gt3', 'oulton_park',   2.44),
+  FuelUsageType('mclaren_650s_gt3', 'snetterton',    2.77),
 
   FuelUsageType('mclaren_720s_gt3', 'monza',         3.73),
   FuelUsageType('mclaren_720s_gt3', 'Brands_Hatch',  2.65),
@@ -240,6 +276,9 @@ const List<FuelUsageType> fuelUsageDefaultList = [
   FuelUsageType('mclaren_720s_gt3', 'Laguna_Seca',   2.70),
   FuelUsageType('mclaren_720s_gt3', 'Suzuka',        3.80),
   FuelUsageType('mclaren_720s_gt3', 'Kyalami',       2.83),
+  FuelUsageType('mclaren_720s_gt3', 'donington',     2.60),
+  FuelUsageType('mclaren_720s_gt3', 'oulton_park',   2.45),
+  FuelUsageType('mclaren_720s_gt3', 'snetterton',    2.70),
 
   FuelUsageType('mercedes_amg_gt3', 'monza',         3.45),
   FuelUsageType('mercedes_amg_gt3', 'Brands_Hatch',  2.93),
@@ -257,6 +296,9 @@ const List<FuelUsageType> fuelUsageDefaultList = [
   FuelUsageType('mercedes_amg_gt3', 'Laguna_Seca',   2.70),
   FuelUsageType('mercedes_amg_gt3', 'Suzuka',        2.93),
   FuelUsageType('mercedes_amg_gt3', 'Kyalami',       2.93),
+  FuelUsageType('mercedes_amg_gt3', 'donington',     2.70),
+  FuelUsageType('mercedes_amg_gt3', 'oulton_park',   2.80),
+  FuelUsageType('mercedes_amg_gt3', 'snetterton',    3.00),
 
   FuelUsageType('nissan_gt_r_gt3_2018', 'monza',         3.55),
   FuelUsageType('nissan_gt_r_gt3_2018', 'Brands_Hatch',  2.90),
@@ -274,6 +316,9 @@ const List<FuelUsageType> fuelUsageDefaultList = [
   FuelUsageType('nissan_gt_r_gt3_2018', 'Laguna_Seca',   2.70),
   FuelUsageType('nissan_gt_r_gt3_2018', 'Suzuka',        3.75),
   FuelUsageType('nissan_gt_r_gt3_2018', 'Kyalami',       2.61),
+  FuelUsageType('nissan_gt_r_gt3_2018', 'donington',     2.70),
+  FuelUsageType('nissan_gt_r_gt3_2018', 'oulton_park',   2.50),
+  FuelUsageType('nissan_gt_r_gt3_2018', 'snetterton',    2.75),
 
   FuelUsageType('porsche_991ii_gt3_cup', 'monza',         3.50),
   FuelUsageType('porsche_991ii_gt3_cup', 'Brands_Hatch',  2.86),
@@ -291,6 +336,9 @@ const List<FuelUsageType> fuelUsageDefaultList = [
   FuelUsageType('porsche_991ii_gt3_cup', 'Laguna_Seca',   2.20),
   FuelUsageType('porsche_991ii_gt3_cup', 'Suzuka',        2.86),
   FuelUsageType('porsche_991ii_gt3_cup', 'Kyalami',       2.86),
+  FuelUsageType('porsche_991ii_gt3_cup', 'donington',     1.48),
+  FuelUsageType('porsche_991ii_gt3_cup', 'oulton_park',   1.65),
+  FuelUsageType('porsche_991ii_gt3_cup', 'snetterton',    1.90),
 
   FuelUsageType('porsche_991ii_gt3_r', 'monza',         3.66),
   FuelUsageType('porsche_991ii_gt3_r', 'Brands_Hatch',  2.73),
@@ -308,6 +356,9 @@ const List<FuelUsageType> fuelUsageDefaultList = [
   FuelUsageType('porsche_991ii_gt3_r', 'Laguna_Seca',   2.80),
   FuelUsageType('porsche_991ii_gt3_r', 'Suzuka',        3.80),
   FuelUsageType('porsche_991ii_gt3_r', 'Kyalami',       2.80),
+  FuelUsageType('porsche_991ii_gt3_r', 'donington',     2.70),
+  FuelUsageType('porsche_991ii_gt3_r', 'oulton_park',   2.55),
+  FuelUsageType('porsche_991ii_gt3_r', 'snetterton',    2.80),
 
   // GT4
   FuelUsageType('alpine_a110_gt4', 'monza',         2.52),
@@ -326,6 +377,9 @@ const List<FuelUsageType> fuelUsageDefaultList = [
   FuelUsageType('alpine_a110_gt4', 'Laguna_Seca',   1.96),
   FuelUsageType('alpine_a110_gt4', 'Suzuka',        2.61),
   FuelUsageType('alpine_a110_gt4', 'Kyalami',       2.22),
+  FuelUsageType('alpine_a110_gt4', 'donington',     1.75),
+  FuelUsageType('alpine_a110_gt4', 'oulton_park',   1.90),
+  FuelUsageType('alpine_a110_gt4', 'snetterton',    2.04),
 
   FuelUsageType('amr_v8_vantage_gt4', 'monza',         2.69),
   FuelUsageType('amr_v8_vantage_gt4', 'Brands_Hatch',  2.11),
@@ -343,6 +397,9 @@ const List<FuelUsageType> fuelUsageDefaultList = [
   FuelUsageType('amr_v8_vantage_gt4', 'Laguna_Seca',   2.11),
   FuelUsageType('amr_v8_vantage_gt4', 'Suzuka',        2.72),
   FuelUsageType('amr_v8_vantage_gt4', 'Kyalami',       2.48),
+  FuelUsageType('amr_v8_vantage_gt4', 'donington',     1.90),
+  FuelUsageType('amr_v8_vantage_gt4', 'oulton_park',   2.05),
+  FuelUsageType('amr_v8_vantage_gt4', 'snetterton',    2.19),
 
   FuelUsageType('audi_r8_gt4', 'monza',         2.83),
   FuelUsageType('audi_r8_gt4', 'Brands_Hatch',  2.06),
@@ -360,6 +417,9 @@ const List<FuelUsageType> fuelUsageDefaultList = [
   FuelUsageType('audi_r8_gt4', 'Laguna_Seca',   2.06),
   FuelUsageType('audi_r8_gt4', 'Suzuka',        2.68),
   FuelUsageType('audi_r8_gt4', 'Kyalami',       2.43),
+  FuelUsageType('audi_r8_gt4', 'donington',     1.90),
+  FuelUsageType('audi_r8_gt4', 'oulton_park',   2.05),
+  FuelUsageType('audi_r8_gt4', 'snetterton',    2.20),
 
   FuelUsageType('bmw_m4_gt4', 'monza',         2.68),
   FuelUsageType('bmw_m4_gt4', 'Brands_Hatch',  2.08),
@@ -377,6 +437,9 @@ const List<FuelUsageType> fuelUsageDefaultList = [
   FuelUsageType('bmw_m4_gt4', 'Laguna_Seca',   2.08),
   FuelUsageType('bmw_m4_gt4', 'Suzuka',        2.70),
   FuelUsageType('bmw_m4_gt4', 'Kyalami',       2.21),
+  FuelUsageType('bmw_m4_gt4', 'donington',     1.85),
+  FuelUsageType('bmw_m4_gt4', 'oulton_park',   2.00),
+  FuelUsageType('bmw_m4_gt4', 'snetterton',    2.15),
 
   FuelUsageType('chevrolet_camaro_gt4r', 'monza',         3.00),
   FuelUsageType('chevrolet_camaro_gt4r', 'Brands_Hatch',  2.13),
@@ -394,6 +457,9 @@ const List<FuelUsageType> fuelUsageDefaultList = [
   FuelUsageType('chevrolet_camaro_gt4r', 'Laguna_Seca',   2.13),
   FuelUsageType('chevrolet_camaro_gt4r', 'Suzuka',        2.76),
   FuelUsageType('chevrolet_camaro_gt4r', 'Kyalami',       2.62),
+  FuelUsageType('chevrolet_camaro_gt4r', 'donington',     1.96),
+  FuelUsageType('chevrolet_camaro_gt4r', 'oulton_park',   2.11),
+  FuelUsageType('chevrolet_camaro_gt4r', 'snetterton',    2.23),
 
   FuelUsageType('ginetta_g55_gt4', 'monza',         2.85),
   FuelUsageType('ginetta_g55_gt4', 'Brands_Hatch',  2.13),
@@ -411,6 +477,9 @@ const List<FuelUsageType> fuelUsageDefaultList = [
   FuelUsageType('ginetta_g55_gt4', 'Laguna_Seca',   2.13),
   FuelUsageType('ginetta_g55_gt4', 'Suzuka',        2.76),
   FuelUsageType('ginetta_g55_gt4', 'Kyalami',       2.42),
+  FuelUsageType('ginetta_g55_gt4', 'donington',     2.05),
+  FuelUsageType('ginetta_g55_gt4', 'oulton_park',   2.20),
+  FuelUsageType('ginetta_g55_gt4', 'snetterton',    2.35),
 
   FuelUsageType('ktm_xbow_gt4', 'monza',         2.55),
   FuelUsageType('ktm_xbow_gt4', 'Brands_Hatch',  1.96),
@@ -428,6 +497,9 @@ const List<FuelUsageType> fuelUsageDefaultList = [
   FuelUsageType('ktm_xbow_gt4', 'Laguna_Seca',   1.96),
   FuelUsageType('ktm_xbow_gt4', 'Suzuka',        2.61),
   FuelUsageType('ktm_xbow_gt4', 'Kyalami',       2.20),
+  FuelUsageType('ktm_xbow_gt4', 'donington',     1.77),
+  FuelUsageType('ktm_xbow_gt4', 'oulton_park',   1.92),
+  FuelUsageType('ktm_xbow_gt4', 'snetterton',    2.07),
 
   FuelUsageType('maserati_mc_gt4', 'monza',         2.66),
   FuelUsageType('maserati_mc_gt4', 'Brands_Hatch',  2.03),
@@ -445,6 +517,9 @@ const List<FuelUsageType> fuelUsageDefaultList = [
   FuelUsageType('maserati_mc_gt4', 'Laguna_Seca',   2.13),
   FuelUsageType('maserati_mc_gt4', 'Suzuka',        2.72),
   FuelUsageType('maserati_mc_gt4', 'Kyalami',       2.23),
+  FuelUsageType('maserati_mc_gt4', 'donington',     1.78),
+  FuelUsageType('maserati_mc_gt4', 'oulton_park',   1.93),
+  FuelUsageType('maserati_mc_gt4', 'snetterton',    2.08),
 
   FuelUsageType('mclaren_570s_gt4', 'monza',         2.86),
   FuelUsageType('mclaren_570s_gt4', 'Brands_Hatch',  2.11),
@@ -462,6 +537,9 @@ const List<FuelUsageType> fuelUsageDefaultList = [
   FuelUsageType('mclaren_570s_gt4', 'Laguna_Seca',   2.11),
   FuelUsageType('mclaren_570s_gt4', 'Suzuka',        2.72),
   FuelUsageType('mclaren_570s_gt4', 'Kyalami',       2.53),
+  FuelUsageType('mclaren_570s_gt4', 'donington',     1.95),
+  FuelUsageType('mclaren_570s_gt4', 'oulton_park',   2.11),
+  FuelUsageType('mclaren_570s_gt4', 'snetterton',    2.25),
 
   FuelUsageType('mercedes_amg_gt4', 'monza',         2.68),
   FuelUsageType('mercedes_amg_gt4', 'Brands_Hatch',  2.11),
@@ -479,6 +557,9 @@ const List<FuelUsageType> fuelUsageDefaultList = [
   FuelUsageType('mercedes_amg_gt4', 'Laguna_Seca',   2.11),
   FuelUsageType('mercedes_amg_gt4', 'Suzuka',        2.72),
   FuelUsageType('mercedes_amg_gt4', 'Kyalami',       2.48),
+  FuelUsageType('mercedes_amg_gt4', 'donington',     1.90),
+  FuelUsageType('mercedes_amg_gt4', 'oulton_park',   2.05),
+  FuelUsageType('mercedes_amg_gt4', 'snetterton',    2.20),
 
   FuelUsageType('porsche_718_cayman_gt4_mr', 'monza',         2.53),
   FuelUsageType('porsche_718_cayman_gt4_mr', 'Brands_Hatch',  1.94),
@@ -496,4 +577,7 @@ const List<FuelUsageType> fuelUsageDefaultList = [
   FuelUsageType('porsche_718_cayman_gt4_mr', 'Laguna_Seca',   1.94),
   FuelUsageType('porsche_718_cayman_gt4_mr', 'Suzuka',        1.94),
   FuelUsageType('porsche_718_cayman_gt4_mr', 'Kyalami',       2.19),
+  FuelUsageType('porsche_718_cayman_gt4_mr', 'donington',     1.77),
+  FuelUsageType('porsche_718_cayman_gt4_mr', 'oulton_park',   1.92),
+  FuelUsageType('porsche_718_cayman_gt4_mr', 'snetterton',    2.07),
 ];
