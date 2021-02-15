@@ -274,7 +274,7 @@ class _HomePageState extends State<HomePage> {
       Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text('- Added British Pack tracks with default lap times and fuel usage values'),
+          Text('- Separated 2015 and 2018 Bentley because they have a different fuel tank capacity (132 vs 120 L)'),
         ],
       ),
     );
