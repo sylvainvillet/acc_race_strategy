@@ -274,7 +274,7 @@ class _HomePageState extends State<HomePage> {
       Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text('- Separated 2015 and 2018 Bentley because they have a different fuel tank capacity (132 vs 120 L)'),
+          Text('- Added BOP-regulated fuel tank limitation in 2020-season for Paul Ricard and Spa.'),
         ],
       ),
     );

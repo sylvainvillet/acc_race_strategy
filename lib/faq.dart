@@ -31,9 +31,6 @@ const kFaq = {
   'What about wet races?':
       'You can adjust the average lap time and fuel usage to match the weather conditions.\n'
           'Just take a bit of margin in case the weather is getting better and lap times are getting faster again.',
-  'Why is there not every versions of the cars?':
-      'There\'s a few GT3 cars that have 2 different versions in the game (normal and Evo, 2015 and 2018) but apart from the Bentley, they share the same fuel tank capacity, as well as the same default fuel usage, '
-          'so you can safely use the app with any of the 2 models.',
   'Can I see a lap-by-lap breakdown?':
       'Yes, just click on a stint to open a detailed view.',
   'I have another question, can I contact you?':

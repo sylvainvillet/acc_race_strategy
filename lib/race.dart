@@ -11,6 +11,7 @@ class Race {
       this.raceDuration,
       this.refuelingAllowed,
       this.mandatoryPitStops,
+      this.tankCapacity,
       this.fuelUsage,
       this.lapTime);
 
@@ -24,6 +25,7 @@ class Race {
   bool maxStintDurationEnabled = false;
   bool refuelingAllowed;
   int mandatoryPitStops;
+  int tankCapacity;
   double fuelUsage;
   double lapTime;
 
@@ -43,7 +45,7 @@ class Race {
     strategies.clear();
 
     // Calculate the max number of laps with full tank
-    final double nbOfLapsWithFullTank = car.tank / fuelUsage;
+    final double nbOfLapsWithFullTank = tankCapacity / fuelUsage;
 
     int minimumPitStops = mandatoryPitStops;
     if (maxStintDurationEnabled) {
@@ -76,13 +78,13 @@ class Race {
             (nbOfLapsWithFullTank * 1.2).ceil()) {
           strategies.insert(0, _computeStrategy(nbOfLaps, i, fuelUsage));
           strategies.first.fuelSaving =
-              (fuelUsage - car.tank / (nbOfLaps / (i + 1)).ceil()) / fuelUsage;
+              (fuelUsage - tankCapacity / (nbOfLaps / (i + 1)).ceil()) / fuelUsage;
         }
       } else {
         if (nbOfLaps <= (nbOfLapsWithFullTank * 1.2).ceil()) {
           strategies.insert(0, _computeStrategy(nbOfLaps, i, fuelUsage));
           strategies.first.fuelSaving =
-              (fuelUsage - car.tank / nbOfLaps) / fuelUsage;
+              (fuelUsage - tankCapacity / nbOfLaps) / fuelUsage;
         }
       }
     }
@@ -99,12 +101,12 @@ class Race {
 
     if (nbOfPitStops == 0) {
       strategy.startingFuel = (nbOfLaps * fuelUsage).ceil();
-      if (strategy.startingFuel > car.tank) strategy.startingFuel = car.tank;
+      if (strategy.startingFuel > tankCapacity) strategy.startingFuel = tankCapacity;
 
       strategy.stints.add(Stint(nbOfLaps, strategy.startingFuel.toDouble()));
     } else if (!refuelingAllowed) {
       int fuelNeeded = (nbOfLaps * fuelUsage).ceil();
-      strategy.startingFuel = (fuelNeeded > car.tank) ? car.tank : fuelNeeded;
+      strategy.startingFuel = (fuelNeeded > tankCapacity) ? tankCapacity : fuelNeeded;
       double realFuelUsage = strategy.startingFuel / nbOfLaps;
 
       int nbOfLapsPerStint = (nbOfLaps / (nbOfPitStops + 1)).ceil();
@@ -138,7 +140,7 @@ class Race {
         // Add the first stint
         if (i == 0) {
           fuelNeeded = (nbOfLapsPerStint * fuelUsage).ceil();
-          if (fuelNeeded > car.tank) fuelNeeded = car.tank;
+          if (fuelNeeded > tankCapacity) fuelNeeded = tankCapacity;
 
           strategy.startingFuel = fuelNeeded;
           strategy.stints
@@ -150,7 +152,7 @@ class Race {
         // Adjust nb of laps and fuel needed for the next stint
         nbOfLapsPerStint = ((nbOfLaps - lap) / (nbOfPitStops - i)).ceil();
         fuelNeeded = (nbOfLapsPerStint * fuelUsage).ceil();
-        if (fuelNeeded > car.tank) fuelNeeded = car.tank;
+        if (fuelNeeded > tankCapacity) fuelNeeded = tankCapacity;
 
         PitStop pitStop = new PitStop();
         pitStop.fuelToAdd = fuelNeeded;

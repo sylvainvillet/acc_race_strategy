@@ -16,7 +16,7 @@ class RaceInput extends StatefulWidget {
 }
 
 class RaceInputState extends State<RaceInput> {
-  Race _race = Race(carsList[0], tracksList[0], 1, 3600, true, 0, 3.0,
+  Race _race = Race(carsList[0], tracksList[0], 1, 3600, true, 0, 120, 3.0,
       tracksList[0].lapTimeGT3);
 
   bool _settingsLoaded = false;
@@ -37,6 +37,7 @@ class RaceInputState extends State<RaceInput> {
   int _lapTimeSeconds = 0;
   int _lapTimeMilliseconds = 0;
 
+  bool _use2020bop;
   int _fuelUsageLiters = 1;
   int _fuelUsageCentiliters = 0;
 
@@ -111,6 +112,7 @@ class RaceInputState extends State<RaceInput> {
               (_race.maxStintDuration < 6900);
       _race.refuelingAllowed = settings.getBool('refuelingAllowed') ?? true;
       _race.mandatoryPitStops = settings.getInt('mandatoryPitStops') ?? 0;
+      _use2020bop = settings.getBool('use2020bop') ?? true;
       _loadLapTime();
       _loadFuelUsage();
 
@@ -140,6 +142,7 @@ class RaceInputState extends State<RaceInput> {
     settings.setInt('maxStintDuration', _race.maxStintDuration);
     settings.setBool('refuelingAllowed', _race.refuelingAllowed);
     settings.setInt('mandatoryPitStops', _race.mandatoryPitStops);
+    settings.setBool('use2020bop', _use2020bop);
     _saveLapTime();
     _saveFuelUsage();
   }
@@ -247,6 +250,11 @@ class RaceInputState extends State<RaceInput> {
               RaisedButton(
                 onPressed: () {
                   _race.car = _cars[_classIndex];
+                  _race.tankCapacity = _use2020bop &&
+                          _race.car.has2020bop &&
+                          get2020bopFuelCapacity(_race.car, _race.track) != null
+                      ? get2020bopFuelCapacity(_race.car, _race.track)
+                      : _race.car.tank;
                   _race.computeStrategies();
                   FocusScope.of(context).unfocus();
 
@@ -255,7 +263,8 @@ class RaceInputState extends State<RaceInput> {
                       (_race.strategies[0].nbOfLaps <=
                           _race.strategies[0].pitStops.length)) {
                     if (_race.refuelingAllowed) {
-                      _showErrorDialog('Please check race length and mandatory pit stops.');
+                      _showErrorDialog(
+                          'Please check race length and mandatory pit stops.');
                     } else {
                       _showErrorDialog('Please try to enable refueling.');
                     }
@@ -321,52 +330,112 @@ class RaceInputState extends State<RaceInput> {
   }
 
   Widget carRow() {
-    return Row(
+    return Column(
       children: [
-        Expanded(
-          flex: 3,
-          child: DropdownButton(
-            value: _classIndex,
-            items: _classDropDownMenuItems,
-            onChanged: (int classIndex) {
-              setState(() {
-                _classIndex = classIndex;
-                _loadLapTime();
-                _loadFuelUsage();
-              });
-            },
-            isExpanded: true,
+        Row(
+          children: [
+            Expanded(
+              flex: 3,
+              child: DropdownButton(
+                value: _classIndex,
+                items: _classDropDownMenuItems,
+                onChanged: (int classIndex) {
+                  setState(() {
+                    _classIndex = classIndex;
+                    _loadLapTime();
+                    _loadFuelUsage();
+                  });
+                },
+                isExpanded: true,
+              ),
+            ),
+            Spacer(),
+            SizedBox(
+              width: 4.0,
+            ),
+            Expanded(
+              flex: 8,
+              child: Container(
+                  child: IndexedStack(
+                index: _classIndex,
+                alignment: Alignment.centerLeft,
+                children: [
+                  DropdownButton(
+                    value: _cars[0],
+                    items: _gt3CarsDropDownMenuItems,
+                    onChanged: carChanged,
+                    isExpanded: true,
+                  ),
+                  DropdownButton(
+                    value: _cars[1],
+                    items: _gt4CarsDropDownMenuItems,
+                    onChanged: carChanged,
+                    isExpanded: true,
+                  ),
+                  Text(_cars[2].displayName,
+                      style: Theme.of(context).textTheme.subtitle1),
+                  Text(_cars[3].displayName,
+                      style: Theme.of(context).textTheme.subtitle1),
+                ],
+              )),
+            ),
+          ],
+        ),
+        AnimatedCrossFade(
+          duration: const Duration(milliseconds: 300),
+          crossFadeState: get2020bopFuelCapacity(_cars[_classIndex], _race.track) == null
+              ? CrossFadeState.showFirst
+              : CrossFadeState.showSecond,
+          firstChild: Container(),
+          secondChild: buildRowTextAndWidget(
+            "Use 2020 BOP:",
+            Row(
+              children: [
+                Checkbox(
+                  value: _use2020bop,
+                  onChanged: (value) {
+                    setState(() {
+                      _use2020bop = value;
+                    });
+                  },
+                ),
+                IconButton(
+                  icon: Icon(
+                    Icons.help,
+                    color: Colors.blue,
+                  ),
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      barrierDismissible: true,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Text('Use 2020 BOP'),
+                          content: SingleChildScrollView(
+                            child: ListBody(
+                              children: <Widget>[
+                                Text(
+                                    'BOP-regulated fuel tank limitation in 2020-season for Paul Ricard and Spa.'),
+                              ],
+                            ),
+                          ),
+                          actions: <Widget>[
+                            FlatButton(
+                              child: Text('Ok'),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  },
+                ),
+                Spacer(),
+              ],
+            ),
           ),
-        ),
-        Spacer(),
-        SizedBox(
-          width: 4.0,
-        ),
-        Expanded(
-          flex: 8,
-          child: Container(
-              child: IndexedStack(
-            index: _classIndex,
-            alignment: Alignment.centerLeft,
-            children: [
-              DropdownButton(
-                value: _cars[0],
-                items: _gt3CarsDropDownMenuItems,
-                onChanged: carChanged,
-                isExpanded: true,
-              ),
-              DropdownButton(
-                value: _cars[1],
-                items: _gt4CarsDropDownMenuItems,
-                onChanged: carChanged,
-                isExpanded: true,
-              ),
-              Text(_cars[2].displayName,
-                  style: Theme.of(context).textTheme.subtitle1),
-              Text(_cars[3].displayName,
-                  style: Theme.of(context).textTheme.subtitle1),
-            ],
-          )),
         ),
       ],
     );
@@ -517,7 +586,9 @@ class RaceInputState extends State<RaceInput> {
     return Row(
       children: [
         Expanded(flex: 2, child: Text("Mandatory pit stops:")),
-        SizedBox(width: 4.0,),
+        SizedBox(
+          width: 4.0,
+        ),
         Expanded(
           child: DropdownButton(
             value: _race.mandatoryPitStops,
