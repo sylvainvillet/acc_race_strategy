@@ -251,7 +251,6 @@ class RaceInputState extends State<RaceInput> {
                 onPressed: () {
                   _race.car = _cars[_classIndex];
                   _race.tankCapacity = _use2020bop &&
-                          _race.car.has2020bop &&
                           get2020bopFuelCapacity(_race.car, _race.track) != null
                       ? get2020bopFuelCapacity(_race.car, _race.track)
                       : _race.car.tank;
@@ -383,9 +382,10 @@ class RaceInputState extends State<RaceInput> {
         ),
         AnimatedCrossFade(
           duration: const Duration(milliseconds: 300),
-          crossFadeState: get2020bopFuelCapacity(_cars[_classIndex], _race.track) == null
-              ? CrossFadeState.showFirst
-              : CrossFadeState.showSecond,
+          crossFadeState:
+              get2020bopFuelCapacity(_cars[_classIndex], _race.track) == null
+                  ? CrossFadeState.showFirst
+                  : CrossFadeState.showSecond,
           firstChild: Container(),
           secondChild: buildRowTextAndWidget(
             "Use 2020 BOP:",

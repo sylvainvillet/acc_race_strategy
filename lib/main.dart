@@ -274,7 +274,7 @@ class _HomePageState extends State<HomePage> {
       Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text('- Added BOP-regulated fuel tank limitation in 2020-season for Paul Ricard and Spa.'),
+          Text('- Added 2020 BOP fuel tank capacities to older GT3 cars'),
         ],
       ),
     );
